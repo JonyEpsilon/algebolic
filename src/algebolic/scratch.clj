@@ -9,8 +9,6 @@
 ;  [n max-depth]
 ;  (repeatedly n #(random-full-tree functions terminals (+ 1 (rand-int (- max-depth 1))))))
 
-(def data (doall (map (fn [x] [x (+ (* 3 x) (* 2 x x))]) (range 0 10 0.5))))
-
 (defn score
   [data ex]
   (let [f (functionalise ex)]
@@ -25,10 +23,6 @@
   [population score-func]
   (map (fn [expr] {:expr expr :score (score-func expr)}) population))
 
-(defn tournament-selector
-  [scored-popn tournament-size]
-  (let [competitors (repeatedly tournament-size #(rand-nth scored-popn))]
-    (:expr (apply max-key :score competitors))))
 
 (defn evolve
   [population config]
@@ -54,9 +48,9 @@
 ;
 ;(def init-pop (repeatedly 100 #(random-full-tree functions terminals 3)))
 
-(defn best-in-generation
-  [pop score-func]
-  (apply max-key :score (score-population pop score-func)))
+;(defn best-in-generation
+;  [pop score-func]
+;  (apply max-key :score (score-population pop score-func)))
 
 ;(def bests (doall (map #(best-in-generation % (:score-func config)) run-data)))
 ;
