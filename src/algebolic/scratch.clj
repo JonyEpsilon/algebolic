@@ -2,22 +2,8 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.evolution
-  (:require [clojure.walk :as walk]
-            [clojure.zip :as zip]))
+(ns algebolic.scratch)
 
-(defn random-full-tree
-  [functions terminals depth]
-  (if (= depth 0)
-    ;; note that the elements of terminals are _functions_ that generate the terminal, hence the
-    ;; double brackets on the line below
-    ((rand-nth terminals))
-    (let [func (rand-nth functions)
-          leaves (repeatedly (:arity func) #(random-full-tree functions terminals (- depth 1)))]
-      (conj leaves (:name func)))))
-
-
-(defn functionalise [ex] (eval (list 'fn '[x] ex)))
 
 ;(defn make-initial-population
 ;  [n max-depth]
@@ -30,50 +16,10 @@
   (let [f (functionalise ex)]
     (* -1 (apply + (map #(Math/abs (- (f (first %)) (second %))) data)))))
 
-(defn count-nodes
-  [ex]
-  (if (seq? ex)
-    (+ 1 (apply + (map count-nodes (rest ex))))
-    1))
-
 (defn score-pp
   [data ex pressure-coeff]
   (+ (score data ex) (* pressure-coeff (count-nodes ex))))
 
-(defn expr-zip
-  [expr]
-  (zip/zipper
-    (constantly true)
-    (fn [node] (if (seq? node) (rest node) nil))
-    (fn [node children] (with-meta (conj children (first node)) (meta node)))
-    expr))
-
-(defn tree-replace
-  [tree index new-tree]
-  (let [subtree-z (nth (iterate zip/next (expr-zip tree)) index)
-        new-zipper (zip/replace subtree-z new-tree)]
-    (zip/root new-zipper)))
-
-
-(defn mutate-expr
-  [expr new-tree-func]
-  (let [size (count-nodes expr)
-        target (rand-int size)]
-    (tree-replace expr target (new-tree-func))))
-
-(defn sub-tree
-  [tree index]
-  (zip/node (nth (iterate zip/next (expr-zip tree)) index)))
-
-(defn crossover-expr
-  [expr1 expr2]
-  (let [size1 (count-nodes expr1)
-        target1 (rand-int size1)
-        size2 (count-nodes expr2)
-        target2 (rand-int size2)
-        subtree1 (sub-tree expr1 target1)
-        subtree2 (sub-tree expr2 target2)]
-    [(tree-replace expr1 target1 subtree2) (tree-replace expr2 target2 subtree1)]))
 
 (defn score-population
   [population score-func]
@@ -116,3 +62,4 @@
 ;
 ;(defn sample-pop [n gen] (repeatedly n #(rand-nth (nth run-data gen))))
 ;
+

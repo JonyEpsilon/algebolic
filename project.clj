@@ -3,7 +3,6 @@
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
 (defproject algebolic "0.1.0-SNAPSHOT"
-  :description ""
-  :url ""
+  :description "A library for doing symbolic regression with algebraic manipulation."
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.6.0"]])

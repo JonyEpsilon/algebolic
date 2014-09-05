@@ -31,7 +31,7 @@
   keywords) as they will be used as function arguments when the expression is functionalised.
   The symbol ::constant will be added to the vars, and it represents a placeholder for a constant
   in the expression. This placeholder could be filled at a later stage with an epehemeral random
-  constant, a symbolic constant etc."
+  constant, or perhaps a symbolic constant etc."
   [vars]
   (conj vars ::constant))
 
@@ -51,6 +51,13 @@
    :div   'pdiv
    :sin   'Math/sin
    :cos   'Math/cos})
+
+(defn make-random-constants
+  "Replaces ::constant placeholders in an expression with random reals. An optional :range can be
+  specified. The constants will be drawn from 0 to :range, which defaults to 1.0."
+  [expr & {:keys [range]
+           :or [range 1.0]}]
+  (walk/postwalk (fn [e] (if (= ::constant e) (rand range) e)) expr))
 
 (defn implement
   "Takes an expression and an implementation and returns an equivalent expression with the function
