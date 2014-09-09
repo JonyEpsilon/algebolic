@@ -2,9 +2,9 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.genetics
+(ns algebolic.expression.genetics
   "Core genetic operation on expressions. Includes functions for creating expressions."
-  (:require [algebolic.tree :as tree]))
+  (:require [algebolic.expression.tree :as tree]))
 
 (defn random-full-tree
   "Generates a tree filled to the given depth from the given functions and terminals. The

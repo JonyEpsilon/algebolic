@@ -2,42 +2,23 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.scratch)
+;(ns algebolic.scratch)
 
 
 ;(defn make-initial-population
 ;  [n max-depth]
 ;  (repeatedly n #(random-full-tree functions terminals (+ 1 (rand-int (- max-depth 1))))))
 
-(defn score
-  [data ex]
-  (let [f (functionalise ex)]
-    (* -1 (apply + (map #(Math/abs (- (f (first %)) (second %))) data)))))
-
-(defn score-pp
-  [data ex pressure-coeff]
-  (+ (score data ex) (* pressure-coeff (count-nodes ex))))
-
-
-(defn score-population
-  [population score-func]
-  (map (fn [expr] {:expr expr :score (score-func expr)}) population))
+;(defn score-pp
+;  [data ex pressure-coeff]
+;  (+ (score data ex) (* pressure-coeff (count-nodes ex))))
+;
+;
+;(defn score-population
+;  [population score-func]
+;  (map (fn [expr] {:expr expr :score (score-func expr)}) population))
 
 
-(defn evolve
-  [population config]
-  (let [{:keys [score-func mutation-new-tree-func tournament-size clone-n mutate-n crossover-n]} config
-        scored-popn (score-population population score-func)
-        clones (repeatedly clone-n #(tournament-selector scored-popn tournament-size))
-        mutations (repeatedly mutate-n
-                              #(mutate-expr
-                                (tournament-selector scored-popn tournament-size)
-                                mutation-new-tree-func))
-        crossovers (reduce into (repeatedly crossover-n
-                                            #(crossover-expr
-                                              (tournament-selector scored-popn tournament-size)
-                                              (tournament-selector scored-popn tournament-size))))]
-    (into clones (into mutations crossovers))))
 
 ;(def config {:score-func             (memoize #(score-pp data % -0.2))
 ;             :mutation-new-tree-func #(random-full-tree functions terminals 3)

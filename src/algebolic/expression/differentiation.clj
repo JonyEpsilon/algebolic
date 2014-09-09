@@ -2,4 +2,4 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.differentiation)
+(ns algebolic.expression.differentiation)

@@ -2,7 +2,7 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.core
+(ns algebolic.expression.core
   "Algebolic expressions are Clojure data structures that represent mathematical expressions.
   They are defined in terms of a number of function symbols and terminal symbols, both defined
   in this namespace. The expressions are not defined directly in terms of Clojure functions

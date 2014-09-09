@@ -2,7 +2,7 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.tree
+(ns algebolic.expression.tree
   "Contains operations that act on expressions as trees. These are used to implement genetic operations
   amongst other things."
   (:require [clojure.zip :as zip]))
