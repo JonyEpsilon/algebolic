@@ -4,18 +4,11 @@
 
 (ns algebolic.evolution.reproduction
   "The purpose of a reproduction step is to take a mating pool - a set of individuals that have
-  somehow been selected from the population - and generate a new generation of the population.")
+  somehow been selected from the population - and generate a new generation of the population.
+  In the simplest case the mating pool is just the previous population, but in more complex
+  algorithms it may also be made up from members of an archive etc.")
 
 (defn reproduce
-  [mating-pool pool-selector config]
-  (let [{:keys [mutation-new-tree-func tournament-size clone-n mutate-n crossover-n]} config
-        clones (repeatedly clone-n #(pool-selector mating-pool tournament-size))
-        mutations (repeatedly mutate-n
-                              #(mutate-expr
-                                (pool-selector mating-pool tournament-size)
-                                mutation-new-tree-func))
-        crossovers (reduce into (repeatedly crossover-n
-                                            #(crossover-expr
-                                              (pool-selector mating-pool tournament-size)
-                                              (pool-selector mating-pool tournament-size))))]
-    (into clones (into mutations crossovers))))
+  "Generates a population from a mating pool."
+  [config pool]
+  pool)

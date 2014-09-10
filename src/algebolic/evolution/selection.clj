@@ -3,7 +3,9 @@
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
 (ns algebolic.evolutions.selection
-  "The purpose of selection is to take a population and generate a new population.")
+  "The purpose of selection is to pick an individual from a set. The selector will usually not
+  pick uniformly, so as to exert some evolutionary pressure. This namespace has some general
+  purpose selection algorithms.")
 
 (defn tournament-selector
   "A simple tournament selector. Selects from the given population with given tournament-size

@@ -4,7 +4,8 @@
 
 (ns algebolic.expression.genetics
   "Core genetic operation on expressions. Includes functions for creating expressions."
-  (:require [algebolic.expression.tree :as tree]))
+  (:require [algebolic.expression.core :as expression]
+            [algebolic.expression.tree :as tree]))
 
 (defn random-full-tree
   "Generates a tree filled to the given depth from the given functions and terminals. The
@@ -37,3 +38,9 @@
         subtree1 (tree/sub-tree expr1 target1)
         subtree2 (tree/sub-tree expr2 target2)]
     [(tree/tree-replace expr1 target1 subtree2) (tree/tree-replace expr2 target2 subtree1)]))
+
+(defn make-initial-population
+  "Make an intial population of n expressions, with depths up to and including max-depth."
+  [functions terminals n max-depth]
+  (repeatedly n (fn [] {:expression
+                           (random-full-tree functions terminals (+ 1 (rand-int (- max-depth 1))))})))

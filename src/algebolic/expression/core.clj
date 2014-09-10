@@ -25,7 +25,7 @@
    {:name :sin :arity 1}
    {:name :cos :arity 1}])
 
-(defn terminals
+(defn make-terminals
   "The set of terminals that an expression can be built with. Takes a list of variables that
   will be included in the terminal set. Note that these variables need to be symbols (i.e. not
   keywords) as they will be used as function arguments when the expression is functionalised.
@@ -56,7 +56,7 @@
   "Replaces ::constant placeholders in an expression with random reals. An optional :range can be
   specified. The constants will be drawn from 0 to :range, which defaults to 1.0."
   [expr & {:keys [range]
-           :or [range 1.0]}]
+           :or   [range 1.0]}]
   (walk/postwalk (fn [e] (if (= ::constant e) (rand range) e)) expr))
 
 (defn implement
