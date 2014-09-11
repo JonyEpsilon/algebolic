@@ -22,7 +22,7 @@
    - update metrics for the whole population and store in the zeitgeist
    - run a reporting function to provide the user with information about this generation."
   [zeitgeist config]
-  (let [{:keys [ea-config score-functions reporting-function metric-update-function]} config
+  (let [{:keys [ea-config score-functions reporting-function]} config
         {:keys [elite-selector mating-pool-selector reproduction-config]} ea-config
         rabble (:rabble zeitgeist)
         elite (or (:elite zeitgeist) [])
@@ -31,9 +31,8 @@
         new-rabble (reproduction/reproduce reproduction-config mating-pool)
         scored-new-rabble (scoring/update-scores new-rabble score-functions)
         new-zg (assoc (assoc zeitgeist :rabble scored-new-rabble) :elite new-elite)
-        updated-zg (metric-update-function new-zg)
-        _ (reporting-function updated-zg)]
-    updated-zg))
+        _ (reporting-function new-zg)]
+    (algebolic.evolution.metrics/update-zeitgeist-age new-zg)))
 
 (defn run-evolution
   "Runs the evolutionary algorithm until the stopping-function in the config is satisfied. Returns
