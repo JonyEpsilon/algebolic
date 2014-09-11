@@ -40,7 +40,7 @@
     [(tree/tree-replace expr1 target1 subtree2) (tree/tree-replace expr2 target2 subtree1)]))
 
 (defn make-initial-population
-  "Make an intial population of n expressions, with depths up to and including max-depth."
+  "Make an intial population of n expressions, with depths up to and including max-depth. You can
+  use this if you are just evolving expressions."
   [functions terminals n max-depth]
-  (repeatedly n (fn [] {:expression
-                           (random-full-tree functions terminals (+ 1 (rand-int (- max-depth 1))))})))
+  (repeatedly n (fn [] (random-full-tree functions terminals (+ 1 (rand-int (- max-depth 1)))))))
