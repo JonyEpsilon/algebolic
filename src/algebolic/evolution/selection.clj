@@ -2,7 +2,7 @@
 ;;;;
 ;;;; algebolic is licenced to you under the MIT licence. See the file LICENCE.txt for full details.
 
-(ns algebolic.evolutions.selection
+(ns algebolic.evolution.selection
   "The purpose of selection is to pick an individual from a set. The selector will usually not
   pick uniformly, so as to exert some evolutionary pressure. This namespace has some general
   purpose selection algorithms.")
@@ -13,8 +13,3 @@
   [tournament-size score-key population]
   (let [competitors (repeatedly tournament-size #(rand-nth population))]
     (apply max-key score-key competitors)))
-
-
-(defn lexicographic-tournament-selector
-  [tournament-size score-keys population]
-  )

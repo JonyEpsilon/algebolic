@@ -1,5 +1,5 @@
 (ns algebolic.evolution.metrics
-  "Population level metrics functions.")
+  "Functios for population-level metrics.")
 
 (defn update-zeitgeist-age
   [zeitgeist]
