@@ -6,9 +6,17 @@
   "Algebolic expressions are Clojure data structures that represent mathematical expressions.
   They are defined in terms of a number of function symbols and terminal symbols, both defined
   in this namespace. The expressions are not defined directly in terms of Clojure functions
-  but rather in terms of keyword symbols. This mainly is to make the expressions more readable.
-  So, for instance the operation of addition is represented by :plus, not '+. There is a
-  function for transforming expressions into Clojure functions that can be called."
+  but rather in terms of keyword symbols. So, for instance the operation of addition is
+  represented by :plus, not '+.  This allows for multiple implementations of expression
+  evaluation:
+
+  There is a function `functionalise` for transforming expressions into Clojure functions that
+  can be called. This is useful for turning the expressions into things you can plot etc.
+
+  There is also an `interpreter` namespace which provides an alternate (and much faster)
+  mechanism for evaluating the expressions at a particular point.
+
+  The `score` namespace provides score functions that use both of these implementations."
   (:require [clojure.walk :as walk]))
 
 (def function-symbols
@@ -41,7 +49,7 @@
   [x y]
   (if (zero? y) 1 (/ x y)))
 
-(def default-implementation
+(def mapping-to-clojure
   "The default implementation of the algebolic function symbols. Should correspond to what you'd think
   would be obvious, perhaps with the exception of div which used protected division."
   {:plus  '+
@@ -51,14 +59,19 @@
    :sin   'Math/sin
    :cos   'Math/cos})
 
-(defn implement
+(defn to-clojure-symbols
   "Takes an expression and an implementation and returns an equivalent expression with the function
   symbols implemented."
-  [expr implementation]
-  (walk/postwalk-replace implementation expr))
+  [expr]
+  (walk/postwalk-replace mapping-to-clojure expr))
 
 (defn functionalise
   "Takes an (implemented) expression and turns it into a function that can be called to get a value.
-  The list of vars must be a quoted vector i.e. '[x y]"
+  The list of vars must be a quoted vector i.e. '[x y].
+
+  Note that this invokes the Clojure compiler with `eval` and thus is relatively slow (around a ms).
+  This function is useful for making functions you can plot etc, but you probably don't want to use
+  it in a loop to evaluate fitness or the like. See the `interpreter` namespace for a better way to
+  do that."
   [ex vars]
-  (eval (list 'fn vars (implement ex default-implementation))))
+  (eval (list 'fn vars (to-clojure-symbols ex))))
