@@ -13,6 +13,8 @@
 
 (defn update-scores
   "Update the scores for each individual in the given list. See above for how the score functions are
-   specified."
+   specified.
+
+   Scoring is (should!) be the most time consuming step, so we pmap it over all of the machine's cores."
   [individuals score-funcs]
-  (map (partial update-individual-scores score-funcs) individuals))
+  (doall (pmap (partial update-individual-scores score-funcs) individuals)))

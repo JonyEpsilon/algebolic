@@ -60,6 +60,6 @@
   (let [{:keys [selector unary-ops binary-ops]} config
         unary-results (map #(apply-unary-operation (:op %) (:repeat %) pool selector) unary-ops)
         binary-results (map #(apply-binary-operation (:op %) (:repeat %) pool selector) binary-ops)]
-    (reduce into
-            [(reduce into [] unary-results)
-             (reduce into [] binary-results)])))
+    (doall (reduce into
+                   [(reduce into [] unary-results)
+                    (reduce into [] binary-results)]))))
