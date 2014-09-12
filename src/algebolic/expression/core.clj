@@ -62,5 +62,3 @@
   The list of vars must be a quoted vector i.e. '[x y]"
   [ex vars]
   (eval (list 'fn vars (implement ex default-implementation))))
-
-(def functionalise-m (memoize functionalise))
