@@ -28,6 +28,12 @@
    {:name :sin :arity 1}
    {:name :cos :arity 1}])
 
+(defn get-function-symbols
+  "A helper for selecting a subset of the function symbols. Pass the names of the symbols you
+  want (as keywords) in a set."
+  [names]
+  (filter #((:name %) names) function-symbols))
+
 (defn make-terminals
   "The set of terminals that an expression can be built with. Takes a list of variables that
   will be included in the terminal set. Note that these variables need to be symbols (i.e. not
