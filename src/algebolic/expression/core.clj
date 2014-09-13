@@ -7,8 +7,8 @@
   They are defined in terms of a number of function symbols and terminal symbols, both defined
   in this namespace. The expressions are not defined directly in terms of Clojure functions
   but rather in terms of keyword symbols. So, for instance the operation of addition is
-  represented by :plus, not '+.  This allows for multiple implementations of expression
-  evaluation:
+  represented by :plus, not '+.  In part this is to make the expressions more readable. It
+  also eases multiple implementations of expression evaluation:
 
   There is a function `functionalise` for transforming expressions into Clojure functions that
   can be called. This is useful for turning the expressions into things you can plot etc.
@@ -44,7 +44,7 @@
   This allows easy implementation of ephemeral random constants. You probably will not need to
   worry about this, but this note hopefully avoids confusion."
   [vars & {:keys [constant-max]
-           :or   {constant-max 1.0}}]
+           :or   {constant-max 2.0}}]
   (conj (map (fn [v] (constantly v)) vars)
         #(rand constant-max)))
 

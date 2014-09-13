@@ -5,7 +5,7 @@
 
   This plumbing is general enough to run simple GA, or more complex multi-objective algorithms like NSGA-II
   or SPEA2. This namespace doesn't, though, implement any of those algorithms itself. See other namespaces in
-  this package for specific implementations."
+  the algorithms package for specific implementations."
   (:require [algebolic.evolution.reproduction :as reproduction]
             [algebolic.evolution.scoring :as scoring]
             [algebolic.evolution.metrics :as metrics]))
