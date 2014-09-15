@@ -119,5 +119,5 @@
 
 (defn ninety-ten-sl-crossover
   "A helper for making a size-limited 90:10 crossover, which you'll probably want to use."
-  [max-size]
-  (partial size-limited-crossover max-size ninety-ten-crossover))
+  [max-size expr1 expr2]
+  (size-limited-crossover max-size ninety-ten-crossover expr1 expr2))
