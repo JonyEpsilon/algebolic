@@ -17,32 +17,33 @@
 
 (defn abs-error
   "Calculates the summed abs error between the expression and the data, given as [[[x1 x2] y] ...] pairs.
-  Uses the interpreter to evaluate the expressions for speed."
+  Uses the interpreter to evaluate the expressions."
   [vars data expr]
   ;; the `double` below prevents crashes when the numbers are integers or rationals
-  (* -1 (apply + (map #(Math/abs (double (- (interpreter/evaluate expr (zipmap vars (first %)))
-                                            (second %))))
-                      data))))
+  (apply + (map #(Math/abs (double (- (interpreter/evaluate expr (zipmap vars (first %)))
+                                      (second %))))
+                data)))
 
 (defn abs-error-pp
   "An error with linear parsimony pressure. The same as `abs-error` but applies a penalty to the score
-  proportional to the size of the expression. Uses the interpreter to evaluate the expressions for speed."
+  proportional to the size of the expression. Uses the interpreter to evaluate the expressions."
   [vars data pp expr]
-  (- (abs-error vars data expr) (* pp (size expr))))
+  (+ (abs-error vars data expr) (* pp (size expr))))
 
 
 ;; Slow versions
 
 (defn abs-error-functionalised
-  "Calculates the summed abs error between the expression and the data, given as [[[x1 x2] y] ...] pairs."
+  "Calculates the summed abs error between the expression and the data, given as [[[x1 x2] y] ...] pairs.
+  Uses the Clojure compiler to evaluate the expressions."
   [vars data expr]
   ;; first compile the expression into a clojure function and then evaluate at the given points.
   (let [f (expression/functionalise expr vars)]
     ;; the `double` below prevents crashes when the numbers are integers or rationals
-    (* -1 (apply + (map #(Math/abs (double (- (apply f (first %)) (second %)))) data)))))
+    (apply + (map #(Math/abs (double (- (apply f (first %)) (second %)))) data))))
 
 (defn abs-error-pp-functionalised
   "An error with linear parsimony pressure. The same as `abs-error` but applies a penalty to the score
-  proportional to the size of the expression."
+  proportional to the size of the expression. Uses the Clojure compiler to evaluate the expressions."
   [vars data pp expr]
-  (- (abs-error-functionalised vars data expr) (* pp (size expr))))
+  (+ (abs-error-functionalised vars data expr) (* pp (size expr))))

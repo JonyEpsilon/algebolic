@@ -9,7 +9,7 @@
 
 (defn tournament-selector
   "A simple tournament selector. Selects from the given population with given tournament-size
-  using the score-key to extract the score from the individual."
+  using the score-key to extract the score from the individual. Scores are always minimized."
   [tournament-size score-key population]
   (let [competitors (repeatedly tournament-size #(rand-nth population))]
-    (apply max-key score-key competitors)))
+    (apply min-key score-key competitors)))
