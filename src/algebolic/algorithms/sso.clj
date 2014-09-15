@@ -4,6 +4,7 @@
             [algebolic.evolution.metrics :as metrics]))
 
 (defn sso-ea-config
+  "Generate a default config for a simple, single-objective genetic algorithm."
   [config]
   (let [{:keys [unary-ops binary-ops tournament-size goal]} config]
     {:elite-selector         (fn [_ _] [])
