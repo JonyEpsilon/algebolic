@@ -5,7 +5,8 @@
 (ns algebolic.expression.genetics
   "Core genetic operation on expressions. Includes functions for creating expressions."
   (:require [algebolic.expression.core :as expression]
-            [algebolic.expression.tree :as tree]))
+            [algebolic.expression.tree :as tree]
+            [clojure.walk :as walk]))
 
 ;;; * Creation *
 
@@ -121,3 +122,18 @@
   "A helper for making a size-limited 90:10 crossover, which you'll probably want to use."
   [max-size expr1 expr2]
   (size-limited-crossover max-size ninety-ten-crossover expr1 expr2))
+
+;; * Non-genetic operations
+
+(defn- twiddle-constant
+  "Takes a constant and returns a slightly different constant. Adds uniform noise to the
+  constant with spread +-0.05 of the constant's value."
+  [const]
+  (* const (+ 0.95 (rand 0.1))))
+
+(defn twiddle-constants
+  "Twiddle all the constants in an expression randomly by at most +- 5%."
+  [expr]
+  (walk/postwalk
+    #(if (number? %) (twiddle-constant %) %)
+    expr))

@@ -1,11 +1,14 @@
 (ns algebolic.evolution.core
-  "The functions in this namespace provide generic plumbing for a generational evolutionary algorithm with explicit
-  mating pool generation and maintenance of an elite population. Central to these functions is the zeitgeist data
-  structure. The zeitgeist contains all of the state of the evolutionary algorithm at one generation.
+  "The functions in this namespace provide generic plumbing for a generational evolutionary algorithm.
+  Supported features include explicit mating pool generation, optional maintenance of an elite population,
+  and optional pre-processing/transformation of the population before scoring. Central to these functions
+  is the zeitgeist data structure. The zeitgeist contains all of the state of the evolutionary algorithm at one
+  generation.
 
   This plumbing is general enough to run simple GA, or more complex multi-objective algorithms like NSGA-II
-  or SPEA2. This namespace doesn't, though, implement any of those algorithms itself. See other namespaces in
-  the algorithms package for specific implementations."
+  or SPEA2, along with hybrid algorithms that combine these with hill-descent and other non EA
+  transformations. This namespace doesn't, though, implement any of those algorithms itself. See other
+  namespaces in the algorithms package for specific implementations."
   (:require [algebolic.evolution.reproduction :as reproduction]
             [algebolic.evolution.scoring :as scoring]
             [algebolic.evolution.metrics :as metrics]))
@@ -19,11 +22,12 @@
    - determine the new elite by taking the current rabble and elite, and applying a function
    - decide who is eligible to participate in reproduction, by applying a function to the rabble and elite
    - generate a new rabble from the mating pool, using a given selection procedure and given genetic operations
+   - run a set of transformations on the rabble
    - update the scores of the new rabble
    - update metrics for the whole population and store in the zeitgeist
    - run a reporting function to provide the user with information about this generation."
   [zeitgeist config]
-  (let [{:keys [ea-config score-functions reporting-function]} config
+  (let [{:keys [ea-config transformations score-functions reporting-function]} config
         {:keys [elite-selector mating-pool-selector reproduction-config]} ea-config
         ;; we time each generations execution (against the wall-clock)
         start-time (System/currentTimeMillis)
@@ -33,8 +37,11 @@
         new-elite (elite-selector rabble elite)
         mating-pool (mating-pool-selector rabble new-elite)
         new-rabble (reproduction/reproduce reproduction-config mating-pool)
-        scored-new-rabble (scoring/update-scores new-rabble score-functions)
-        evolved-zg (assoc (assoc zeitgeist :rabble scored-new-rabble) :elite new-elite)
+        transformed-rabble (if (nil? transformations)
+                             new-rabble
+                             ((apply comp transformations) new-rabble))
+        scored-transformed-rabble (scoring/update-scores transformed-rabble score-functions)
+        evolved-zg (assoc (assoc zeitgeist :rabble scored-transformed-rabble) :elite new-elite)
         end-time (System/currentTimeMillis)
         ;; update some stats on the zg
         stats {:age (+ 1 (or (:age evolved-zg) 0)) :time (- end-time start-time)}
