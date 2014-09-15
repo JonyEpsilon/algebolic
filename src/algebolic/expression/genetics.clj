@@ -103,3 +103,21 @@
         subtree1 (tree/sub-tree expr1 target1)
         subtree2 (tree/sub-tree expr2 target2)]
     [(tree/tree-replace expr1 target1 subtree2) (tree/tree-replace expr2 target2 subtree1)]))
+
+;; TODO: this could conceivably be a generic function in algebolic.evolution.reproduction
+(defn size-limited-crossover
+  "Takes a crossover operation and makes a size-limited version of it. If a product is larger
+  than the size limit then it is replaced with the corresponding parent. Note that this will
+  result in expressions over the size limit being locked out of crossover. So long as there is
+  some mutation in the system that can reduce the size, then this should not be a problem."
+  [max-size crossover-func expr1 expr2]
+  (let [crossover-result (crossover-func expr1 expr2)
+        new-expr1 (first crossover-result)
+        new-expr2 (second crossover-result)]
+    [(if (> (tree/count-nodes new-expr1) max-size) expr1 new-expr1)
+     (if (> (tree/count-nodes new-expr2) max-size) expr2 new-expr2)]))
+
+(defn ninety-ten-sl-crossover
+  "A helper for making a size-limited 90:10 crossover, which you'll probably want to use."
+  [max-size]
+  (partial size-limited-crossover max-size ninety-ten-crossover))
