@@ -28,13 +28,6 @@
 ;; <=
 
 ;; @@
-((expression/functionalise expr '[x]) 3)
-;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-long'>12</span>","value":"12"}
-;; <=
-
-;; @@
 (def f (expression/functionalise expr '[x]))
 ;; @@
 ;; =>
@@ -45,7 +38,7 @@
 (time (do (doall (repeatedly 100 #(expression/functionalise expr '[x]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 67.951 msecs&quot;
+;;; &quot;Elapsed time: 77.841 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -56,7 +49,7 @@
 (time (do (doall (repeatedly 100 #(f 3))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 0.451 msecs&quot;
+;;; &quot;Elapsed time: 0.629 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -64,10 +57,10 @@
 ;; <=
 
 ;; @@
-(time (do (doall (repeatedly 10000 #(interpreter/interpret expr {'x 3}))) :done))
+(time (do (doall (repeatedly 100000 #(interpreter/interpret expr {'x 3}))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 12.176 msecs&quot;
+;;; &quot;Elapsed time: 98.349 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -75,8 +68,12 @@
 ;; <=
 
 ;; @@
-(interpreter/interpret expr {'x 3})
+(interpreter/interpret2 expr {'x 3})
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-long'>12</span>","value":"12"}
 ;; <=
+
+;; @@
+
+;; @@
