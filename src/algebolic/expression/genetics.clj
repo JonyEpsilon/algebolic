@@ -89,8 +89,8 @@
 
 (defn ninety-ten-crossover
   "Randomly selects a crossover point in each of the two given trees, and switches the subtrees
-  at these points. The crossover points are selected from the terminal and function nodes with
-  uniform probability 0.10 and 0.90 respectively."
+  at these points. Following Koza, The crossover points are selected from the terminal and function
+  nodes with probability 0.10 and 0.90 respectively."
   [expr1 expr2]
   (let [terminal1 (> (rand) 0.9)
         target1 (if terminal1
