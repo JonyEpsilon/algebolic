@@ -38,3 +38,30 @@
    in a depth-first walk of the original tree."
   [tree index]
   (zip/node (nth (iterate zip/next (expr-zip tree)) index)))
+
+(defn terminal?
+  "Is an expression a terminal?"
+  [node]
+  (not (seq? node)))
+
+(defn random-terminal-index
+  "Returns the depth-first index of a randomly selected terminal from the expression. Uniformly
+  distributed over the terminals."
+  [expr]
+  (let [size (count-nodes expr)]
+    (first
+      (filter #(terminal? (sub-tree expr %))
+              (repeatedly #(rand-int size))))))
+
+(defn random-nonterminal-index
+  "Returns the depth-first index of a randomly selected non-terminal from the expression. Uniformly
+  distributed over the non-terminals. If there are _only_ terminals, that is to say this tree's size
+  is 1, then this function will return the terminal anyway."
+  [expr]
+  (let [size (count-nodes expr)]
+    (if (= size 1)
+      ;; return the terminal's index, about the best we can do
+      0
+      (first
+        (filter #(not (terminal? (sub-tree expr %)))
+                (repeatedly #(rand-int size)))))))

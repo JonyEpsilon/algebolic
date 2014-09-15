@@ -86,3 +86,20 @@
         subtree1 (tree/sub-tree expr1 target1)
         subtree2 (tree/sub-tree expr2 target2)]
     [(tree/tree-replace expr1 target1 subtree2) (tree/tree-replace expr2 target2 subtree1)]))
+
+(defn ninety-ten-crossover
+  "Randomly selects a crossover point in each of the two given trees, and switches the subtrees
+  at these points. The crossover points are selected from the terminal and function nodes with
+  uniform probability 0.10 and 0.90 respectively."
+  [expr1 expr2]
+  (let [terminal1 (> (rand) 0.9)
+        target1 (if terminal1
+                  (tree/random-terminal-index expr1)
+                  (tree/random-nonterminal-index expr1))
+        terminal2 (> (rand) 0.9)
+        target2 (if terminal2
+                  (tree/random-terminal-index expr2)
+                  (tree/random-nonterminal-index expr2))
+        subtree1 (tree/sub-tree expr1 target1)
+        subtree2 (tree/sub-tree expr2 target2)]
+    [(tree/tree-replace expr1 target1 subtree2) (tree/tree-replace expr2 target2 subtree1)]))
