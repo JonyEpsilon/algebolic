@@ -30,6 +30,20 @@
   [vars data pp expr]
   (+ (abs-error vars data expr) (* pp (size expr))))
 
+(defn chi-squared
+  "Calculates the chi-squared error between the expression and the data, given as [[[x1 x2] y] ...] pairs.
+  Uses the interpreter to evaluate the expressions."
+  [vars data expr]
+  ;; the `double` below prevents crashes when the numbers are integers or rationals
+  (apply + (map #(Math/pow (double (- (interpreter/evaluate expr (zipmap vars (first %)))
+                                      (second %))) 2)
+                data)))
+
+(defn chi-squared-pp
+  "An error with linear parsimony pressure. The same as `chi-squared` but applies a penalty to the score
+  proportional to the size of the expression. Uses the interpreter to evaluate the expressions."
+  [vars data pp expr]
+  (+ (chi-squared vars data expr) (* pp (size expr))))
 
 ;; Slow versions
 
