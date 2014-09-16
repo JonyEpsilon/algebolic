@@ -11,6 +11,7 @@
 ;; * Helpers *
 
 (defn apply-to-fraction
+  "Apply a transformation to a randomly selected fraction of the population."
   [transform fraction population]
   (map
     #(if (< (rand) fraction) (transform %) %)
