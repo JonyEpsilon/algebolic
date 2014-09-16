@@ -5,6 +5,8 @@
 (ns algebolic.expression.tree
   "Contains operations that act on expressions as trees. These are used to implement genetic operations
   amongst other things."
+  (:refer-clojure :exclude [rand rand-nth rand-int])
+  (:use [algebolic.utility.random])
   (:require [clojure.zip :as zip]))
 
 (defn count-nodes

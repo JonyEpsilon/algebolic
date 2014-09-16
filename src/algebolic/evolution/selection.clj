@@ -5,7 +5,9 @@
 (ns algebolic.evolution.selection
   "The purpose of selection is to pick an individual from a set. The selector will usually not
   pick uniformly, so as to exert some evolutionary pressure. This namespace has some general
-  purpose selection algorithms.")
+  purpose selection algorithms."
+  (:refer-clojure :exclude [rand rand-nth rand-int])
+  (:use [algebolic.utility.random]))
 
 (defn tournament-selector
   "A simple tournament selector. Selects from the given population with given tournament-size

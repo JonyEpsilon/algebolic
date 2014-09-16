@@ -4,6 +4,8 @@
 
 (ns algebolic.expression.genetics
   "Core genetic operation on expressions. Includes functions for creating expressions."
+  (:refer-clojure :exclude [rand rand-nth rand-int])
+  (:use [algebolic.utility.random])
   (:require [algebolic.expression.core :as expression]
             [algebolic.expression.tree :as tree]
             [clojure.walk :as walk]))

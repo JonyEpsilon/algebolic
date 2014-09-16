@@ -17,6 +17,8 @@
   mechanism for evaluating the expressions at a particular point.
 
   The `score` namespace provides score functions that use both of these implementations."
+  (:refer-clojure :exclude [rand rand-nth rand-int])
+  (:use [algebolic.utility.random])
   (:require [clojure.walk :as walk]))
 
 (def function-symbols

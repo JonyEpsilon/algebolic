@@ -22,7 +22,7 @@
    - determine the new elite by taking the current rabble and elite, and applying a function
    - decide who is eligible to participate in reproduction, by applying a function to the rabble and elite
    - generate a new rabble from the mating pool, using a given selection procedure and given genetic operations
-   - run a set of transformations on the rabble
+   - run a list of transformations on the rabble
    - update the scores of the new rabble
    - update metrics for the whole population and store in the zeitgeist
    - run a reporting function to provide the user with information about this generation."
