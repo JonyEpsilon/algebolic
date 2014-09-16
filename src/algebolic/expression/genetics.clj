@@ -139,3 +139,14 @@
   (walk/postwalk
     #(if (number? %) (twiddle-constant %) %)
     expr))
+
+(defn trim
+  "Takes an expresion and a max-size, and trims the expression if it is too big. The trimming is done
+  by returning a randomly selected sub-expression. There is no guarantee that this sub-expression is
+  smaller than the size limit, or indeed smaller than the original expression. But if applied each
+  generation it will tend to keep the population size under control."
+  [max-size expr]
+  (let [size (tree/count-nodes expr)]
+    (if (> max-size size)
+      (tree/sub-tree expr (rand-int size))
+      expr)))
