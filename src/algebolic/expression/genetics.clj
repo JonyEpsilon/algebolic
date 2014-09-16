@@ -140,13 +140,22 @@
     #(if (number? %) (twiddle-constant %) %)
     expr))
 
-(defn trim
+(defn trim-soft
   "Takes an expresion and a max-size, and trims the expression if it is too big. The trimming is done
   by returning a randomly selected sub-expression. There is no guarantee that this sub-expression is
   smaller than the size limit, or indeed smaller than the original expression. But if applied each
   generation it will tend to keep the population size under control."
   [max-size expr]
   (let [size (tree/count-nodes expr)]
-    (if (> max-size size)
+    (if (> size max-size)
       (tree/sub-tree expr (rand-int size))
+      expr)))
+
+(defn trim-hard
+  "Takes an expresion and a max-size, and trims the expression if it is too big. The trimming is done
+  by returning a randomly selected sub-expression, which is guaranteed to be smaller than the size limit."
+  [max-size expr]
+  (let [size (tree/count-nodes expr)]
+    (if (> size max-size)
+      (first (filter #(< (tree/count-nodes %) max-size) (repeatedly #(tree/sub-tree expr (rand-int size)))))
       expr)))
