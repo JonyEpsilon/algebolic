@@ -10,21 +10,32 @@
 
 ;; * Helpers *
 
-(defn apply-to-fraction
-  "Apply a transformation to a randomly selected fraction of the population."
-  [transform fraction population]
-  (map
-    #(if (< (rand) fraction) (transform %) %)
-    population))
-
 (defn apply-to-genotype
   [func individual]
   (assoc individual :genotype (func (:genotype individual))))
 
+(defn apply-to-fraction-of-genotypes
+  "Apply a transformation to a randomly selected fraction of the population. The transformation will
+  be applied to the genotype of the individual. The rest of the information in the individual will be
+  preserved."
+  [transform fraction population]
+  (map
+    #(if (< (rand) fraction) ((partial apply-to-genotype transform) %) %)
+    population))
+
+(defn apply-to-all-genotypes
+  "Apply a transformation to all of the population. The transformation will be applied to the genotype of
+  the individual. The rest of the information in the individual will be preserved."
+  [transform population]
+  (map (partial apply-to-genotype transform) population))
+
+
 ;; * Generic transformations *
 
-(defn- hill-descent-genotype
-  "See below."
+(defn hill-descent
+  "Takes a genotype and applies the given tweak function, returns the new individual if it
+  scores better on the score-function, otherwise returns the individual. The tweak function and
+  the score function should operate on the genotype of the individual."
   [tweak-function score-function genotype]
   (let [tweaked (tweak-function genotype)
         score (score-function genotype)
@@ -33,9 +44,3 @@
       tweaked
       genotype)))
 
-(defn hill-descent
-  "Takes an individual and applies the given tweak function, returns the new individual if it
-  scores better on the score-function, otherwise returns the individual. The tweak function and
-  the score function should operate on the genotype of the individual."
-  [tweak-function score-function individual]
-  (apply-to-genotype (partial hill-descent-genotype tweak-function score-function) individual))
