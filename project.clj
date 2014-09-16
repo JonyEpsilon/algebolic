@@ -6,4 +6,5 @@
   :description "A library for doing symbolic regression with algebraic manipulation."
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.6.0"]]
-  :plugins [[lein-gorilla "0.3.4-SNAPSHOT"]])
+  :plugins [[lein-gorilla "0.3.4-SNAPSHOT"]]
+  :jvm-opts ["-server" "-Xmx4g"])
