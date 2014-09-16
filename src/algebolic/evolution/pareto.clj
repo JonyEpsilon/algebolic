@@ -15,6 +15,11 @@
   [[k1 k2] individuals i]
   (filter #(dominates [k1 k2] i %) individuals))
 
+(defn dominator-set
+  "Returns the individuals that dominate i wrt k1 and k2. As above, it doesn't return a set."
+  [[k1 k2] individuals i]
+  (filter #(dominates [k1 k2] % i) individuals))
+
 (defn dominated-count
   "Count how many individuals i dominates wrt to k1 and k2."
   [[k1 k2] individuals i]
