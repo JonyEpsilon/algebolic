@@ -10,7 +10,7 @@
   calculates the strength for each member of the population, and assocs it into the individual."
   [keys population]
   (map
-    #(assoc % :strength (pareto/dominated-count keys population %))
+    #(assoc % :spea2-strength (pareto/dominated-count keys population %))
     population))
 
 (defn- calculate-raw-fitness
@@ -18,28 +18,17 @@
   The smaller this fitness measure the better."
   [keys population i]
   (let [dominators (pareto/dominator-set keys population i)]
-    (apply + (map :strength dominators))))
+    (apply + (map :spea2-strength dominators))))
 
 
 (defn- calculate-raw-fitnesses
   "Calculates raw fitnesses for each individual in a population and assocs it into the individual's
-  under the :raw-fitness key"
+  under the :spea2-raw-fitness key"
   [keys population]
   (let [counted-pop (calculate-strength keys population)]
     (map
-      #(assoc % :raw-fitness (calculate-raw-fitness keys counted-pop %))
+      #(assoc % :spea2-raw-fitness (calculate-raw-fitness keys counted-pop %))
       population)))
-
-;(defn- distance
-;  [[k1 k2] i1 i2]
-;  (Math/sqrt
-;    (+
-;      (Math/pow (- (k1 i1) (k1 i2)) 2)
-;      (Math/pow (- (k2 i1) (k2 i2)) 2))))
-;
-;(defn- kth-nearest-distance
-;  [keys k population i]
-;  (nth (sort < (map (partial distance keys i) population)) k))
 
 (defn coords-from-individual
   "Get the individuals coordinates in objective space as a vector."
@@ -65,14 +54,15 @@
         ;; so we can efficiently find the nearest neighbours.
         coords (map (partial coords-from-individual [k1 k2]) population)
         tree (kdtree/build-tree coords)]
-    (map #(assoc % :density
+    (map #(assoc % :spea2-density
                    (calculate-density
                      (kth-nearest-distance tree k (coords-from-individual [k1 k2] %))))
          population)))
 
 (defn calculate-fitnesses
+  "Calculates the SPEA2 fitness values with respect to the given keys. Assocs"
   [keys population]
-  (map #(assoc % :fitness (+ (:raw-fitness %) (:density %)))
+  (map #(assoc % :spea2-fitness (+ (:spea2-raw-fitness %) (:spea2-density %)))
        (->> population
             (calculate-densities keys)
             (calculate-raw-fitnesses keys))))
