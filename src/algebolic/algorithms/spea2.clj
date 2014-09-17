@@ -3,7 +3,16 @@
 
   Currently limited to two objectives, but the API is arranged so that should be easy to
   generalise if needed."
-  (:require [algebolic.evolution.pareto :as pareto]))
+  (:require [algebolic.evolution.pareto :as pareto]
+            [algebolic.evolution.selection :as selection]))
+
+;; These functions can be grouped into:
+;; - functions for calculating the fitness values
+;; - functions for constructing the archive from the population and previous archive
+;; - functions for plugging the algorithm into algebolic.evolution.core
+
+
+;; * Fitness calculation functions *
 
 (defn- calculate-strength
   "The strength of an individual is the count of how many individuals it dominates. This function
@@ -60,9 +69,74 @@
          population)))
 
 (defn calculate-fitnesses
-  "Calculates the SPEA2 fitness values with respect to the given keys. Assocs"
+  "Calculates the SPEA2 fitness values with respect to the given keys. Assocs the fitness values into
+  a :spea2-fitness key."
   [keys population]
   (map #(assoc % :spea2-fitness (+ (:spea2-raw-fitness %) (:spea2-density %)))
        (->> population
             (calculate-densities keys)
             (calculate-raw-fitnesses keys))))
+
+
+;; * Archive construction functions *
+
+(defn- simple-archive-thinner
+  [goals oversized-archive target-size]
+  (let [coords (map (partial coords-from-individual goals) oversized-archive)
+        tree (kdtree/build-tree coords)
+        measured-archive (map #(assoc % :spea2-distance
+                                        (kth-nearest-distance tree 2 (coords-from-individual goals %)))
+                              oversized-archive)]
+    (take target-size (sort-by :spea2-distance > measured-archive))))
+
+(defn- thin-out-archive
+  "SPEA2 has a fairly complicated prescription for thinning out the archive if it's oversized. We look for
+  the individual who has the least distance to its nearest neighbour. If this doesn't yield a unique
+  individual, then we rank on distance to the second nearest neighbour, recursing until the tie is broken.
+  We remove this individual from the population and repeat until we have thinned the archive to the desired
+  size."
+  [goals oversized-archive target-size]
+  )
+
+(defn make-new-archive
+  "Implements the core step of the SPEA2 algorithm which is constructing a new archive of elite
+  individuals from the old archive and a population of new individuals."
+  [goals archive-size population old-archive]
+  (let [pool (into population old-archive)
+        scored-pool (calculate-fitnesses goals pool)
+        ;; individuals that are non-dominated will have a fitness less than 1
+        new-elites (filter #(< (:spea2-fitness %) 1.0) scored-pool)
+        new-size (count new-elites)
+;;        _ (println "New archive size: " new-size)
+    ]
+    ;; there are three cases here: either the new archive is exactly the right size, too big, or too small
+    (cond
+      ;; the easy one, if we happen to have the right number, then we're done.
+      (= new-size archive-size) new-elites
+      ;; if we have too few non-dominated individuals to fill the archive then we select the dominated
+      ;; individuals with the lowest fitness scores to make up the difference. The easiest way to do this
+      ;; is to just sort and select from the pool.
+      (< new-size archive-size) (take archive-size (sort-by :spea2-fitness < scored-pool))
+      ;; and finally, if we've got too many non-dominated individuals then some of them are for the chop
+      (> new-size archive-size) (simple-archive-thinner goals new-elites archive-size))))
+
+
+;; * algebolic.evolution.core configuration *
+
+(defn spea2-config
+  "A configuration implementing SPEA2. Needs to be fed the set of goal keys (which must be of
+  length 2 currently) and the unary and binary genetic operations that will be used in reproduction.
+
+  The SPEA2 algorithm preserves an elite population from generation to generation. On each iteration
+  first the newly bred individuals will be pooled with the elite population, and all have their
+  :spea2-fitness calculated. Then, a new elite population is constructed made up of the non-dominated
+  individuals - with thinning if there are too many elite individuals, and promotion from the population
+  if there are too few. Finally, a new generation is bred from the archived individuals, using binary
+  tournament selection on the :spea2-fitness, and the cycle begins again."
+  [config]
+  (let [{:keys [unary-ops binary-ops goals archive-size]} config]
+    {:elite-selector         (fn [rabble elite] (make-new-archive goals archive-size rabble elite))
+     :mating-pool-selector   (fn [_ elite] elite)
+     :reproduction-config    {:selector   (partial selection/tournament-selector 2 :spea2-fitness)
+                              :unary-ops  unary-ops
+                              :binary-ops binary-ops}}))
