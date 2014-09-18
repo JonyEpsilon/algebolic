@@ -90,7 +90,7 @@
                               oversized-archive)
         sorted-archive (sort-by :spea2-distance < measured-archive)]
     {:archive (rest sorted-archive)
-     :tree    (kdtree/delete tree (coords-from-individual (first sorted-archive)))}))
+     :tree    (kdtree/delete tree (coords-from-individual goals (first sorted-archive)))}))
 
 (defn simple-archive-thinner
   "SPEA2 has a fairly complicated prescription for thinning out the archive if it's oversized. It specifies
@@ -121,7 +121,7 @@
         ;; individuals that are non-dominated will have a fitness less than 1
         new-elites (filter #(< (:spea2-fitness %) 1.0) scored-pool)
         new-size (count new-elites)
-        ;;        _ (println "New archive raw size: " new-size)
+        _ (println "New archive raw size: " new-size)
         ]
     ;; there are three cases here: either the new archive is exactly the right size, too big, or too small
     (cond
