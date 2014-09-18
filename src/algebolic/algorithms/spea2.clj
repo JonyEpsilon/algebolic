@@ -82,13 +82,15 @@
 ;; * Archive construction functions *
 
 (defn- remove-one-item-simple
-  [goals oversized-archive]
-  (let [coords (map (partial coords-from-individual goals) oversized-archive)
-        tree (kdtree/build-tree coords)
+  [goals tree-and-archive]
+  (let [tree (:tree tree-and-archive)
+        oversized-archive (:archive tree-and-archive)
         measured-archive (map #(assoc % :spea2-distance
                                         (kth-nearest-distance tree 2 (coords-from-individual goals %)))
-                              oversized-archive)]
-    (rest (sort-by :spea2-distance < measured-archive))))
+                              oversized-archive)
+        sorted-archive (sort-by :spea2-distance < measured-archive)]
+    {:archive (rest sorted-archive)
+     :tree    (kdtree/delete tree (coords-from-individual (first sorted-archive)))}))
 
 (defn simple-archive-thinner
   "SPEA2 has a fairly complicated prescription for thinning out the archive if it's oversized. It specifies
@@ -102,8 +104,13 @@
   individuals are tied on nearest neighbour distance then we break the tie arbitrarily, rather than on second
   nearest neighbour etc."
   [goals oversized-archive target-size]
-  (nth (iterate (partial remove-one-item-simple goals) oversized-archive)
-       (- (count oversized-archive) target-size)))
+  (let [coords (map (partial coords-from-individual goals) oversized-archive)
+        tree (kdtree/build-tree coords)
+        thinned-tree-and-archive (nth (iterate
+                                        (partial remove-one-item-simple goals)
+                                        {:tree tree :archive oversized-archive})
+                                      (- (count oversized-archive) target-size))]
+    (:archive thinned-tree-and-archive)))
 
 (defn make-new-archive
   "Implements the core step of the SPEA2 algorithm which is constructing a new archive of elite
