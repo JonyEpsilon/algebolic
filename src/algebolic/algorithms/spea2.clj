@@ -1,6 +1,9 @@
 (ns algebolic.algorithms.spea2
-  "An implementation of the SPEA2 algorithm of Zitzler et al. Nearly. See the archive thinner functions
-  for details of the difference.
+  "An implementation of the SPEA2 algorithm of Zitzler et al. Well, almost. There's a very slight
+  difference in way the archive is constructed. Using my technique you can replicate SPEA2 exactly, but
+  it runs slowly. You can approximate the behaviour of SPEA2 and have it run pretty fast. I've tested
+  the approximation on a few problems and it doesn't seem to make any real difference. See the archive
+  thinner functions for details of the difference.
 
   This code is currently limited to two objectives, but the API is arranged so that should be easy to
   generalise if needed."
@@ -81,47 +84,61 @@
 
 ;; * Archive construction functions *
 
-(defn- remove-one-item-simple
-  [goals tree-and-archive]
+(defn- k-nearest-distances
+  "Returns the distances to the k nearest neighbours, in ascending order. The first neighbour is really
+  a neighbour, not the point itself."
+  [tree k-max p]
+  ;; the rest drops the distance from the point to itself, which is always zero
+  (apply vector (rest (sort < (map #(Math/sqrt (:dist-squared %)) (kdtree/nearest-neighbor tree p k-max))))))
+
+(defn- remove-one-item
+  "One step of the archive thinning routine, removes one individual from the archive."
+  [goals comparison-depth tree-and-archive]
   (let [tree (:tree tree-and-archive)
         oversized-archive (:archive tree-and-archive)
-        measured-archive (map #(assoc % :spea2-distance
-                                        (kth-nearest-distance tree 2 (coords-from-individual goals %)))
+        measured-archive (map #(assoc % :spea2-distances
+                                        (k-nearest-distances tree comparison-depth (coords-from-individual goals %)))
                               oversized-archive)
-        sorted-archive (sort-by :spea2-distance < measured-archive)]
+        ;; this next step relies on the sort being done lexicographically on the distance arrays.
+        ;; That `sort-by` does this isn't mentioned in the docstring, but is explicitly stated
+        ;; here http://clojure.org/data_structures
+        sorted-archive (sort-by :spea2-distances measured-archive)]
     {:archive (rest sorted-archive)
      :tree    (kdtree/delete tree (coords-from-individual goals (first sorted-archive)))}))
 
-(defn simple-archive-thinner
+(defn thin-archive
   "SPEA2 has a fairly complicated prescription for thinning out the archive if it's oversized. It specifies
   that one should look for the individual who has the least distance to its nearest neighbour. If this doesn't
   yield a unique individual, then we should rank on distance to the second nearest neighbour, recursing until
   the tie is broken. We remove this individual from the population and repeat until we have thinned the archive
   to the desired size.
 
-  We implement a simplified version of this algorithm (and it's unknown how this affects the performance, as I
-  haven't compared it with the full SPEA2 thinner). We do the same as the SPEA2 prescription, except if
-  individuals are tied on nearest neighbour distance then we break the tie arbitrarily, rather than on second
-  nearest neighbour etc."
-  [goals oversized-archive target-size]
+  We implement a modification of this algorithm. Instead we calculate for each point the distance to its
+  `comparison-depth` nearest neighbours. We then sort the points lexicographically by these distance lists
+  and drop the first item. Then we recalculate the distances and repeat to drop the desired number of items.
+  If `comparison-depth` is the same as the archive size then this is equivalent to the SPEA2 technique,
+  although spectacularly inefficient. Experiments have shown that using a `comparison-depth` of 5 does not
+  give appreciably different results than SPEA2 for common problems."
+  [goals oversized-archive comparison-depth target-size]
   (let [coords (map (partial coords-from-individual goals) oversized-archive)
         tree (kdtree/build-tree coords)
         thinned-tree-and-archive (nth (iterate
-                                        (partial remove-one-item-simple goals)
+                                        (partial remove-one-item goals comparison-depth)
                                         {:tree tree :archive oversized-archive})
                                       (- (count oversized-archive) target-size))]
     (:archive thinned-tree-and-archive)))
 
+
 (defn make-new-archive
   "Implements the core step of the SPEA2 algorithm which is constructing a new archive of elite
   individuals from the old archive and a population of new individuals."
-  [goals archive-size population old-archive]
+  [goals comparison-depth archive-size population old-archive]
   (let [pool (into population old-archive)
         scored-pool (calculate-fitnesses goals pool)
         ;; individuals that are non-dominated will have a fitness less than 1
         new-elites (filter #(< (:spea2-fitness %) 1.0) scored-pool)
         new-size (count new-elites)
-        _ (println "New archive raw size: " new-size)
+        ;;_ (println "New archive raw size: " new-size)
         ]
     ;; there are three cases here: either the new archive is exactly the right size, too big, or too small
     (cond
@@ -132,7 +149,7 @@
       ;; is to just sort and select from the pool.
       (< new-size archive-size) (take archive-size (sort-by :spea2-fitness < scored-pool))
       ;; and finally, if we've got too many non-dominated individuals then some of them are for the chop
-      (> new-size archive-size) (simple-archive-thinner goals new-elites archive-size))))
+      (> new-size archive-size) (thin-archive goals new-elites comparison-depth archive-size))))
 
 
 ;; * algebolic.evolution.core configuration *
@@ -148,8 +165,8 @@
   if there are too few. Finally, a new generation is bred from the archived individuals, using binary
   tournament selection on the :spea2-fitness, and the cycle begins again."
   [config]
-  (let [{:keys [unary-ops binary-ops goals archive-size]} config]
-    {:elite-selector       (fn [rabble elite] (make-new-archive goals archive-size rabble elite))
+  (let [{:keys [unary-ops binary-ops goals archive-size comparison-depth] :or {comparison-depth 5}} config]
+    {:elite-selector       (fn [rabble elite] (make-new-archive goals comparison-depth archive-size rabble elite))
      :mating-pool-selector (fn [_ elite] elite)
      :reproduction-config  {:selector   (partial selection/tournament-selector 2 :spea2-fitness)
                             :unary-ops  unary-ops
