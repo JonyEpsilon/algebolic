@@ -35,16 +35,22 @@
         rabble (:rabble zeitgeist)
         elite (or (:elite zeitgeist) [])
         new-elite (elite-selector rabble elite)
+        elite-selected-time (System/currentTimeMillis)
         mating-pool (mating-pool-selector rabble new-elite)
         new-rabble (reproduction/reproduce reproduction-config mating-pool)
         transformed-rabble (if (nil? transformations)
                              new-rabble
                              ((apply comp transformations) new-rabble))
+        rabble-ready-time (System/currentTimeMillis)
         scored-transformed-rabble (scoring/update-scores transformed-rabble score-functions)
         evolved-zg (assoc (assoc zeitgeist :rabble scored-transformed-rabble) :elite new-elite)
         end-time (System/currentTimeMillis)
         ;; update some stats on the zg
-        stats {:age (+ 1 (or (:age evolved-zg) 0)) :time (- end-time start-time)}
+        stats {:age (+ 1 (or (:age evolved-zg) 0))
+               :time (- end-time start-time)
+               :selection-time (- elite-selected-time start-time)
+               :reproduction-time (- rabble-ready-time elite-selected-time)
+               :scoring-time (- end-time rabble-ready-time)}
         final-zg (merge evolved-zg stats)
         _ (when reporting-function (reporting-function final-zg))]
     final-zg))
