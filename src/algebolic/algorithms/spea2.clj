@@ -1,7 +1,8 @@
 (ns algebolic.algorithms.spea2
-  "An implementation of the SPEA2 algorithm of Zitzler et al.
+  "An implementation of the SPEA2 algorithm of Zitzler et al. Nearly. See the archive thinner functions
+  for details of the difference.
 
-  Currently limited to two objectives, but the API is arranged so that should be easy to
+  This code is currently limited to two objectives, but the API is arranged so that should be easy to
   generalise if needed."
   (:require [algebolic.evolution.pareto :as pareto]
             [algebolic.evolution.selection :as selection]))
@@ -80,23 +81,29 @@
 
 ;; * Archive construction functions *
 
-(defn- simple-archive-thinner
-  [goals oversized-archive target-size]
+(defn- remove-one-item-simple
+  [goals oversized-archive]
   (let [coords (map (partial coords-from-individual goals) oversized-archive)
         tree (kdtree/build-tree coords)
         measured-archive (map #(assoc % :spea2-distance
                                         (kth-nearest-distance tree 2 (coords-from-individual goals %)))
                               oversized-archive)]
-    (take target-size (sort-by :spea2-distance > measured-archive))))
+    (rest (sort-by :spea2-distance < measured-archive))))
 
-(defn- thin-out-archive
-  "SPEA2 has a fairly complicated prescription for thinning out the archive if it's oversized. We look for
-  the individual who has the least distance to its nearest neighbour. If this doesn't yield a unique
-  individual, then we rank on distance to the second nearest neighbour, recursing until the tie is broken.
-  We remove this individual from the population and repeat until we have thinned the archive to the desired
-  size."
+(defn simple-archive-thinner
+  "SPEA2 has a fairly complicated prescription for thinning out the archive if it's oversized. It specifies
+  that one should look for the individual who has the least distance to its nearest neighbour. If this doesn't
+  yield a unique individual, then we should rank on distance to the second nearest neighbour, recursing until
+  the tie is broken. We remove this individual from the population and repeat until we have thinned the archive
+  to the desired size.
+
+  We implement a simplified version of this algorithm (and it's unknown how this affects the performance, as I
+  haven't compared it with the full SPEA2 thinner). We do the same as the SPEA2 prescription, except if
+  individuals are tied on nearest neighbour distance then we break the tie arbitrarily, rather than on second
+  nearest neighbour etc."
   [goals oversized-archive target-size]
-  )
+  (nth (iterate (partial remove-one-item-simple goals) oversized-archive)
+       (- (count oversized-archive) target-size)))
 
 (defn make-new-archive
   "Implements the core step of the SPEA2 algorithm which is constructing a new archive of elite
@@ -107,8 +114,8 @@
         ;; individuals that are non-dominated will have a fitness less than 1
         new-elites (filter #(< (:spea2-fitness %) 1.0) scored-pool)
         new-size (count new-elites)
-;;        _ (println "New archive size: " new-size)
-    ]
+        ;;        _ (println "New archive raw size: " new-size)
+        ]
     ;; there are three cases here: either the new archive is exactly the right size, too big, or too small
     (cond
       ;; the easy one, if we happen to have the right number, then we're done.
@@ -135,8 +142,8 @@
   tournament selection on the :spea2-fitness, and the cycle begins again."
   [config]
   (let [{:keys [unary-ops binary-ops goals archive-size]} config]
-    {:elite-selector         (fn [rabble elite] (make-new-archive goals archive-size rabble elite))
-     :mating-pool-selector   (fn [_ elite] elite)
-     :reproduction-config    {:selector   (partial selection/tournament-selector 2 :spea2-fitness)
-                              :unary-ops  unary-ops
-                              :binary-ops binary-ops}}))
+    {:elite-selector       (fn [rabble elite] (make-new-archive goals archive-size rabble elite))
+     :mating-pool-selector (fn [_ elite] elite)
+     :reproduction-config  {:selector   (partial selection/tournament-selector 2 :spea2-fitness)
+                            :unary-ops  unary-ops
+                            :binary-ops binary-ops}}))
