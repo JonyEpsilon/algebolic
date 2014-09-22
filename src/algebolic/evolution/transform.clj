@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.evolution.transform
   "Functions for transforming individuals, and the population. These can be supplied to the EA
   to perform non-EA transformations before scoring (see `algebolic.evolution.core` for details.

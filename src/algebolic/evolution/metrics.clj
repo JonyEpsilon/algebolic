@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.evolution.metrics
   "Functions for extracting metrics for each generation.")
 

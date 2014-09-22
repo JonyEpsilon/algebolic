@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.algorithms.spea2
   "An implementation of the SPEA2 algorithm of Zitzler et al. Well, almost. There's a very slight
   difference in way the archive is constructed. Using my technique you can replicate SPEA2 exactly, but

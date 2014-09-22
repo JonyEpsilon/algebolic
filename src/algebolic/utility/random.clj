@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.utility.random
   "Random number generators and associated functions. These mirror the functions in clojure.core, but
   use java's ThreadLocalRandom which works well with multi-threading."

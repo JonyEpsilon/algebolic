@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.expression.interpreter
   "Provides an interpreter for algebolic expressions. This can be used to get the
   value of an expression for particular values of the variables. It is much faster

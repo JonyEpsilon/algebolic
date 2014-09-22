@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.evolution.pareto
   "Functions for computing Pareto dominance, rank etc. Currently limited to two-objective
   comparison, but the API should be easy to extend to more.")

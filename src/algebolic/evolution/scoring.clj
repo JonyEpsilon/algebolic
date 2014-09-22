@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.evolution.scoring
   "Functions in this namespace manage the process of scoring individuals in a population.
   The actual score functions themselves are representation dependent and will be found with

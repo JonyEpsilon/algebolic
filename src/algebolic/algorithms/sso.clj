@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.algorithms.sso
   "Implements a simple, single-objective genetic algorithm."
   (:require [algebolic.evolution.selection :as selection]
