@@ -12,19 +12,21 @@
 (defn count-nodes
   "Count the number of nodes in a tree, including both the function symbols and terminals."
   [ex]
-  (if (seq? ex)
+  (if (vector? ex)
     (+ 1 (apply + (map count-nodes (rest ex))))
     1))
 
 (defn expr-zip
   "We define a zipper constructor for manipulating expression trees. Differs from the ordinary
-  sequence zippers in that it doesn't recognise the sequence itself as a node. You probably
-  don't need to use this directly."
+  sequence zippers in that it views the `rest` of a vector as the children of the `first` of the
+  vector. That makes almost no sense, but if you draw the right diagram it's obvious. Basically, does
+  the right thing for navigating the parts of expressions. You probably don't need to use this
+  directly."
   [expr]
   (zip/zipper
     (constantly true)
-    (fn [node] (if (seq? node) (rest node) nil))
-    (fn [node children] (with-meta (conj children (first node)) (meta node)))
+    (fn [node] (if (vector? node) (rest node) nil))
+    (fn [node children] (with-meta (vec (cons (first node) children)) (meta node)))
     expr))
 
 (defn tree-replace
@@ -44,7 +46,7 @@
 (defn terminal?
   "Is an expression a terminal?"
   [node]
-  (not (seq? node)))
+  (not (vector? node)))
 
 (defn random-terminal-index
   "Returns the depth-first index of a randomly selected terminal from the expression. Uniformly

@@ -67,11 +67,16 @@
    :sin   'Math/sin
    :cos   'Math/cos})
 
-(defn to-clojure-symbols
+(defn- to-clojure-symbols
   "Takes an expression and an implementation and returns an equivalent expression with the function
   symbols implemented."
   [expr]
   (walk/postwalk-replace mapping-to-clojure expr))
+
+(defn- to-sexp
+  "Takes an expression represented as nested vectors, and transforms it into nested sequences."
+  [expr]
+  (walk/postwalk (fn [s] (if (vector? s) (seq s) s)) expr))
 
 (defn functionalise
   "Takes an (implemented) expression and turns it into a function that can be called to get a value.
@@ -82,4 +87,4 @@
   it in a loop to evaluate fitness or the like. See the `interpreter` namespace for a better way to
   do that."
   [ex vars]
-  (eval (list 'fn vars (to-clojure-symbols ex))))
+  (eval (list 'fn vars (to-clojure-symbols (to-sexp ex)))))

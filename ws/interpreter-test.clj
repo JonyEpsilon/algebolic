@@ -13,6 +13,7 @@
 ;; @@
 (ns balmy-hurricane
   (:require [gorilla-plot.core :as plot]
+            [clojure.walk :as walk]
             [algebolic.expression.core :as expression]
             [algebolic.expression.interpreter :as interpreter]))
 ;; @@
@@ -21,10 +22,17 @@
 ;; <=
 
 ;; @@
-(def expr '(:plus (:times x x) x))
+(def expr [:plus [:times 'x 'x] 'x])
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/expr</span>","value":"#'balmy-hurricane/expr"}
+;; <=
+
+;; @@
+expr
+;; @@
+;; =>
+;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:plus [:times x x] x]"}
 ;; <=
 
 ;; @@
@@ -35,10 +43,17 @@
 ;; <=
 
 ;; @@
+(f 3)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-long'>12</span>","value":"12"}
+;; <=
+
+;; @@
 (time (do (doall (repeatedly 100 #(expression/functionalise expr '[x]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 77.841 msecs&quot;
+;;; &quot;Elapsed time: 65.611 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -49,7 +64,7 @@
 (time (do (doall (repeatedly 100 #(f 3))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 0.629 msecs&quot;
+;;; &quot;Elapsed time: 0.282 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -57,10 +72,10 @@
 ;; <=
 
 ;; @@
-(time (do (doall (repeatedly 100000 #(interpreter/interpret expr {'x 3}))) :done))
+(time (do (doall (repeatedly 100000 #(interpreter/evaluate expr {'x 3}))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 98.349 msecs&quot;
+;;; &quot;Elapsed time: 75.261 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -68,7 +83,7 @@
 ;; <=
 
 ;; @@
-(interpreter/interpret2 expr {'x 3})
+(interpreter/evaluate expr {'x 3})
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-long'>12</span>","value":"12"}

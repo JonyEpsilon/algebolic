@@ -12,6 +12,7 @@
   This code is currently limited to two objectives, but the API is arranged so that should be easy to
   generalise if needed."
   (:require [algebolic.evolution.pareto :as pareto]
+            [kdtree]
             [algebolic.evolution.selection :as selection]))
 
 ;; These functions can be grouped into:
