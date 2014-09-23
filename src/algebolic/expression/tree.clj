@@ -7,12 +7,13 @@
   amongst other things."
   (:refer-clojure :exclude [rand rand-nth rand-int])
   (:use [algebolic.utility.random])
-  (:require [clojure.zip :as zip]))
+  (:require [algebolic.expression.core :as expression]
+            [clojure.zip :as zip]))
 
 (defn count-nodes
   "Count the number of nodes in a tree, including both the function symbols and terminals."
   [ex]
-  (if (vector? ex)
+  (if (expression/non-terminal? ex)
     (+ 1 (apply + (map count-nodes (rest ex))))
     1))
 
@@ -25,8 +26,8 @@
   [expr]
   (zip/zipper
     (constantly true)
-    (fn [node] (if (vector? node) (rest node) nil))
-    (fn [node children] (with-meta (vec (cons (first node) children)) (meta node)))
+    (fn [node] (if (expression/non-terminal? node) (rest node) nil))
+    (fn [node children] (with-meta (expression/make-expression (first node) children) (meta node)))
     expr))
 
 (defn tree-replace
@@ -43,18 +44,13 @@
   [tree index]
   (zip/node (nth (iterate zip/next (expr-zip tree)) index)))
 
-(defn terminal?
-  "Is an expression a terminal?"
-  [node]
-  (not (vector? node)))
-
 (defn random-terminal-index
   "Returns the depth-first index of a randomly selected terminal from the expression. Uniformly
   distributed over the terminals."
   [expr]
   (let [size (count-nodes expr)]
     (first
-      (filter #(terminal? (sub-tree expr %))
+      (filter #(expression/terminal? (sub-tree expr %))
               (repeatedly #(rand-int size))))))
 
 (defn random-nonterminal-index
@@ -67,5 +63,5 @@
       ;; return the terminal's index, about the best we can do
       0
       (first
-        (filter #(not (terminal? (sub-tree expr %)))
+        (filter #(expression/non-terminal? (sub-tree expr %))
                 (repeatedly #(rand-int size)))))))

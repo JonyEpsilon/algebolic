@@ -13,23 +13,144 @@
 ;; @@
 (ns zealous-dawn
   (:require [gorilla-plot.core :as plot]
-            [clojure.core.match :as match]))
+            [clojure.core.match :as match]
+            [algebolic.expression.algebra :as algebra]
+            [algebolic.expression.render :as render]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
 
 ;; @@
-(match/match ['(:times (:plus 3 4) 2)]
-  [([:times ([:plus a b] :seq) c] :seq)] (seq [:plus (seq [:times a c]) (seq [:times b c])])
- )
+(algebra/expand-all [:times 3 [:plus 5 4]])
 ;; @@
+;; ->
+;;; [:times (3
+;;; [:plus 5 4]
+;;; 3 9)]
+;;; 
+;; <-
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>(:plus (:times 3 2) (:times 4 2))</span>","value":"(:plus (:times 3 2) (:times 4 2))"}
+;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(</span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>3</span>","value":"3"},{"type":"html","content":"<span class='clj-long'>9</span>","value":"9"}],"value":"(3 9)"}],"value":"[:times (3 9)]"}
 ;; <=
 
 ;; @@
-(==>
-  (:times (:plus a b) c)
-  (:plus (:times a c) (:times b c)))
+(def ex '[:plus [:plus [:times x x] [:plus [:plus [:plus 0.7504784709616623 x] [:times [:plus x x] x]] [:cos [:plus 0.3830874064158682 [:plus [:cos [:minus 0.055046136153585355 0.8797611746687769]] [:plus [:cos [:minus 0.05204904398981943 0.8411797701626479]] 2.0926440371329957]]]]]] x])
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;zealous-dawn/ex</span>","value":"#'zealous-dawn/ex"}
+;; <=
+
+;; @@
+(render/mathematician-view ex)
+;; @@
+;; =>
+;;; {"type":"latex","content":"((x \\cdot x + (((0.750 + x) + (x + x) \\cdot x) + \\cos((0.383 + (\\cos((0.055 - 0.880) + (\\cos((0.052 - 0.841) + 2.093))))) + x)","value":"#algebolic.expression.render.ExprLatexView{:expr [:plus [:plus [:times x x] [:plus [:plus [:plus 0.7504784709616623 x] [:times [:plus x x] x]] [:cos [:plus 0.3830874064158682 [:plus [:cos [:minus 0.055046136153585355 0.8797611746687769]] [:plus [:cos [:minus 0.05204904398981943 0.8411797701626479]] 2.0926440371329957]]]]]] x]}"}
+;; <=
+
+;; @@
+(def p
+  (algebra/expand-full ex))
+;; @@
+;; ->
+;;; [:times x x]
+;;; [:plus 0.7504784709616623 x]
+;;; [:plus x x]
+;;; [:times [:plus x x] x]
+;;; [:plus [:plus 0.7504784709616623 x] [:plus [:times x x] [:times x x]]]
+;;; [:minus 0.055046136153585355 0.8797611746687769]
+;;; [:cos -0.8247150385151916]
+;;; [:minus 0.05204904398981943 0.8411797701626479]
+;;; [:cos -0.7891307261728284]
+;;; [:plus 0.7044625411564679 2.0926440371329957]
+;;; [:plus 0.678766255897252 2.7971065782894637]
+;;; [:plus 0.3830874064158682 3.475872834186716]
+;;; [:cos 3.8589602406025842]
+;;; [:plus [:plus [:plus [:plus 0.7504784709616623 x] [:times x x]] [:times x x]] -0.7535388950559735]
+;;; [:plus [:times x x] [:plus -0.7535388950559735 [:plus [:plus [:plus 0.7504784709616623 x] [:times x x]] [:times x x]]]]
+;;; [:plus [:plus [:plus [:times x x] -0.7535388950559735] [:plus [:plus [:plus 0.7504784709616623 x] [:times x x]] [:times x x]]] x]
+;;; [:times x x]
+;;; [:plus [:times x x] -0.7535388950559735]
+;;; [:plus 0.7504784709616623 x]
+;;; [:times x x]
+;;; [:plus [:plus 0.7504784709616623 x] [:times x x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus 0.7504784709616623 x] [:times x x]] [:times x x]]
+;;; [:plus [:plus -0.7535388950559735 [:times x x]] [:plus [:plus [:plus 0.7504784709616623 x] [:times x x]] [:times x x]]]
+;;; [:plus [:plus [:plus [:plus -0.7535388950559735 [:times x x]] [:plus [:plus 0.7504784709616623 x] [:times x x]]] [:times x x]] x]
+;;; [:times x x]
+;;; [:plus -0.7535388950559735 [:times x x]]
+;;; [:plus 0.7504784709616623 x]
+;;; [:times x x]
+;;; [:plus [:plus 0.7504784709616623 x] [:times x x]]
+;;; [:plus [:plus -0.7535388950559735 [:times x x]] [:plus [:plus 0.7504784709616623 x] [:times x x]]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus -0.7535388950559735 [:times x x]] [:plus 0.7504784709616623 x]] [:times x x]] [:times x x]]
+;;; [:plus [:plus [:plus [:plus [:plus -0.7535388950559735 [:times x x]] [:plus 0.7504784709616623 x]] [:times x x]] [:times x x]] x]
+;;; [:times x x]
+;;; [:plus -0.7535388950559735 [:times x x]]
+;;; [:plus 0.7504784709616623 x]
+;;; [:plus [:plus -0.7535388950559735 [:times x x]] [:plus 0.7504784709616623 x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus -0.7535388950559735 [:times x x]] 0.7504784709616623] x] [:times x x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus [:plus -0.7535388950559735 [:times x x]] 0.7504784709616623] x] [:times x x]] [:times x x]]
+;;; [:plus [:plus [:plus [:plus [:plus [:plus -0.7535388950559735 [:times x x]] 0.7504784709616623] x] [:times x x]] [:times x x]] x]
+;;; [:times x x]
+;;; [:plus -0.7535388950559735 [:times x x]]
+;;; [:plus [:plus -0.7535388950559735 [:times x x]] 0.7504784709616623]
+;;; [:plus [:plus 0.7504784709616623 [:plus -0.7535388950559735 [:times x x]]] x]
+;;; [:times x x]
+;;; [:plus [:plus [:plus 0.7504784709616623 [:plus -0.7535388950559735 [:times x x]]] x] [:times x x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus 0.7504784709616623 [:plus -0.7535388950559735 [:times x x]]] x] [:times x x]] [:times x x]]
+;;; [:plus [:plus [:plus [:plus [:plus 0.7504784709616623 [:plus -0.7535388950559735 [:times x x]]] x] [:times x x]] [:times x x]] x]
+;;; [:times x x]
+;;; [:plus -0.7535388950559735 [:times x x]]
+;;; [:plus 0.7504784709616623 [:plus -0.7535388950559735 [:times x x]]]
+;;; [:plus [:plus [:plus 0.7504784709616623 -0.7535388950559735] [:times x x]] x]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus 0.7504784709616623 -0.7535388950559735] [:times x x]] x] [:times x x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus [:plus 0.7504784709616623 -0.7535388950559735] [:times x x]] x] [:times x x]] [:times x x]]
+;;; [:plus [:plus [:plus [:plus [:plus [:plus 0.7504784709616623 -0.7535388950559735] [:times x x]] x] [:times x x]] [:times x x]] x]
+;;; [:plus 0.7504784709616623 -0.7535388950559735]
+;;; [:times x x]
+;;; [:plus -0.003060424094311176 [:times x x]]
+;;; [:plus [:plus -0.003060424094311176 [:times x x]] x]
+;;; [:times x x]
+;;; [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]]
+;;; [:plus [:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]] x]
+;;; [:times x x]
+;;; [:plus -0.003060424094311176 [:times x x]]
+;;; [:plus [:plus -0.003060424094311176 [:times x x]] x]
+;;; [:times x x]
+;;; [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]]
+;;; [:times x x]
+;;; [:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]]
+;;; [:plus [:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]] x]
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;zealous-dawn/p</span>","value":"#'zealous-dawn/p"}
+;; <=
+
+;; @@
+p
+;; @@
+;; =>
+;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"html","content":"<span class='clj-double'>-0.003060424094311176</span>","value":"-0.003060424094311176"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"}],"value":"[:plus -0.003060424094311176 [:times x x]]"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:plus [:plus -0.003060424094311176 [:times x x]] x]"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"}],"value":"[:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]]"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"}],"value":"[:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]]"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:plus [:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]] x]"}
+;; <=
+
+;; @@
+(render/mathematician-view p)
+;; @@
+;; =>
+;;; {"type":"latex","content":"(((((-0.003 + x \\cdot x) + x) + x \\cdot x) + x \\cdot x) + x)","value":"#algebolic.expression.render.ExprLatexView{:expr [:plus [:plus [:plus [:plus [:plus -0.003060424094311176 [:times x x]] x] [:times x x]] [:times x x]] x]}"}
+;; <=
+
+;; @@
+
 ;; @@

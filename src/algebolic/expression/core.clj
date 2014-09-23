@@ -5,10 +5,14 @@
 (ns algebolic.expression.core
   "Algebolic expressions are Clojure data structures that represent mathematical expressions.
   They are defined in terms of a number of function symbols and terminal symbols, both defined
-  in this namespace. The expressions are not defined directly in terms of Clojure functions
-  but rather in terms of keyword symbols. So, for instance the operation of addition is
-  represented by :plus, not '+.  In part this is to make the expressions more readable. It
-  also eases multiple implementations of expression evaluation:
+  in this namespace. Valid expressions are either a terminal symbol, or a vector whose `first` is
+  a function symbol and whose `rest` is the appropriate number of arguments to that function, which
+  themselves must be expressions.
+
+  The expressions are not defined directly in terms of Clojure functions but rather in terms of
+  keyword symbols. So, for instance the operation of addition is represented by :plus, not '+.
+  In part this is to make the expressions more readable. It also eases multiple implementations
+  of expression evaluation:
 
   There is a function `functionalise` for transforming expressions into Clojure functions that
   can be called. This is useful for turning the expressions into things you can plot etc.
@@ -20,6 +24,8 @@
   (:refer-clojure :exclude [rand rand-nth rand-int])
   (:use [algebolic.utility.random])
   (:require [clojure.walk :as walk]))
+
+;; * Functions and terminals *
 
 (def function-symbols
   "The primitive set of functions that algebolic expressions can be built from."
@@ -57,7 +63,30 @@
   [x y]
   (if (zero? y) 1 (/ x y)))
 
-(def mapping-to-clojure
+;; * Expressions *
+
+(defn non-terminal?
+  "Is an expression a non-terminal? Doesn't check whether the function symbol is valid, or whether
+  the arity is correct."
+  [expr]
+  (vector? expr))
+
+(defn terminal?
+  "Is an expression a terminal?"
+  [expr]
+  (not (vector? expr)))
+
+(defn make-expression
+  "A helper for constructing expression vectors. Makes it less painful if you want to change the way
+  expressions are represented."
+  [function arguments]
+  (vec (cons function arguments)))
+
+;; * Evaluation as clojure *
+
+;; TODO: not sure this belongs in this namespace
+
+(def ^:private mapping-to-clojure
   "The default implementation of the algebolic function symbols. Should correspond to what you'd think
   would be obvious, perhaps with the exception of div which used protected division."
   {:plus  '+

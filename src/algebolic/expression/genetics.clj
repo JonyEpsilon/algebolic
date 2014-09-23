@@ -24,7 +24,7 @@
     ((rand-nth terminals))
     (let [func (rand-nth functions)
           leaves (repeatedly (:arity func) #(random-full-tree functions terminals (- depth 1)))]
-      (vec (cons (:name func) leaves)))))
+      (expression/make-expression (:name func) leaves))))
 
 (defn random-grow-tree
   "Generates a tree with given maximum depth from the given functions and terminals. The nodes will
@@ -42,7 +42,7 @@
       ((rand-nth terminals))
       (let [func (rand-nth functions)
             leaves (repeatedly (:arity func) #(random-grow-tree functions terminals (- depth 1)))]
-        (vec (cons (:name func) leaves))))))
+        (expression/make-expression (:name func) leaves)))))
 
 (defn ramped-half-and-half-population
   "Koza's 'ramped half-and-half' tree generation algorithm. Half of the trees are made with `grow`
