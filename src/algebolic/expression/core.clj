@@ -30,8 +30,8 @@
 (def function-symbols
   "The primitive set of functions that algebolic expressions can be built from."
   [{:name :plus :arity 2}
-   {:name :minus :arity 2}
    {:name :times :arity 2}
+   {:name :minus :arity 1}
    {:name :div :arity 2}
    {:name :sin :arity 1}
    {:name :cos :arity 1}])

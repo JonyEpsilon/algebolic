@@ -19,22 +19,15 @@
                ;; distribute plus through times
                [[:times a [:plus b c]]] [:plus [:times a b] [:times a c]]
                [[:times [:plus a b] c]] [:plus [:times a c] [:times b c]]
-               [[:times a [:minus b c]]] [:minus [:times a b] [:times a c]]
-               [[:times [:minus a b] c]] [:minus [:times a c] [:times b c]]
                ;; associative operations to the left
                [[:plus a [:plus b c]]] [:plus [:plus a b] c]
-               [[:minus a [:minus b c]]] [:minus [:minus a b] c]
                [[:times a [:times b c]]] [:times [:times a b] c]
-               ;; times to the right
-               ;;[[:times [:times a b] c]] [:times a [:times b c]]
-               ;;[[:plus [:plus a b] c]] [:plus a [:plus b c]]
                ;; always move numbers to the left
                [[:plus (a :guard not-number?) (b :guard number?)]] [:plus b a]
-               [[:minus (a :guard not-number?) (b :guard number?)]] [:minus b a]
                [[:times (a :guard not-number?) (b :guard number?)]] [:times b a]
                ;; reduce arithmetic operations on numbers
                [[:plus (a :guard number?) (b :guard number?)]] (+ a b)
-               [[:minus (a :guard number?) (b :guard number?)]] (- a b)
+               [[:minus (a :guard number?)]] (- a)
                [[:times (a :guard number?) (b :guard number?)]] (* a b)
                ;; reduce trig operations on numbers
                [[:cos (a :guard number?)]] (Math/cos a)

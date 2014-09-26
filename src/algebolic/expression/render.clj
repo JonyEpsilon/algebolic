@@ -7,9 +7,9 @@
   [expr]
   (if (expression/non-terminal? expr)
     (case (first expr)
-      :plus  (str "(" (str/join " + " (map latexify (rest expr))) ")")
-      :minus  (str "(" (str/join " - " (map latexify (rest expr))) ")")
-      :times  (str/join " \\cdot " (map latexify (rest expr)))
+      :plus (str "(" (str/join " + " (map latexify (rest expr))) ")")
+      :minus (str "(- " (latexify (second expr)) ")")
+      :times (str/join " \\cdot " (map latexify (rest expr)))
       :div (str "\\frac{" (latexify (first (rest expr))) " }{ " (latexify (second (rest expr))) "}")
       :sin (str "\\sin(" (latexify (second expr)) ")")
       :cos (str "\\cos(" (latexify (second expr))) ")")
