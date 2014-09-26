@@ -3,6 +3,7 @@
 ;;;; Not for distribution.
 
 (ns algebolic.expression.algebra
+  "This namespace implements some basic computer algebra operations on algebolic expressions."
   (:require [algebolic.expression.core :as expression]
             [clojure.core.match :as match]
             [clojure.walk :as walk]
@@ -14,14 +15,19 @@
 
 (defn expand
   [expr]
-  (println expr)
   (match/match [expr]
                ;; distribute plus through times
                [[:times a [:plus b c]]] [:plus [:times a b] [:times a c]]
                [[:times [:plus a b] c]] [:plus [:times a c] [:times b c]]
-               ;; plus and times to the left
+               [[:times a [:minus b c]]] [:minus [:times a b] [:times a c]]
+               [[:times [:minus a b] c]] [:minus [:times a c] [:times b c]]
+               ;; associative operations to the left
                [[:plus a [:plus b c]]] [:plus [:plus a b] c]
+               [[:minus a [:minus b c]]] [:minus [:minus a b] c]
                [[:times a [:times b c]]] [:times [:times a b] c]
+               ;; times to the right
+               ;;[[:times [:times a b] c]] [:times a [:times b c]]
+               ;;[[:plus [:plus a b] c]] [:plus a [:plus b c]]
                ;; always move numbers to the left
                [[:plus (a :guard not-number?) (b :guard number?)]] [:plus b a]
                [[:minus (a :guard not-number?) (b :guard number?)]] [:minus b a]
