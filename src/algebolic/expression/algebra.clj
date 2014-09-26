@@ -3,7 +3,10 @@
 ;;;; Not for distribution.
 
 (ns algebolic.expression.algebra
-  "This namespace implements some basic computer algebra operations on algebolic expressions."
+  "This namespace implements some basic computer algebra operations on algebolic expressions. And by 'basic'
+  I really mean basic. The functions here make no attempt at being a complete computer algebra system, but
+  rather offer a few useful transformations that can be used both in the EA, and also by hand for
+  understanding expressions."
   (:require [algebolic.expression.core :as expression]
             [clojure.core.match :as match]
             [clojure.walk :as walk]
@@ -13,10 +16,29 @@
   [x]
   (not (number? x)))
 
-(defn expand
+
+(defn- operate-tree
+  "Takes an expression and applies the given operation to every sub-expression, including the
+  expression itself."
+  [op expr]
+  (if (expression/non-terminal? expr)
+    (op (expression/make-expression (first expr) (map (partial operate-tree op) (rest expr))))
+    expr))
+
+(defn- operate-full
+  "Repeatedly applies the operation to the expression, and its sub-expressions, until the
+  result no longer changes. Beware of infinte loops!"
+  [op expr]
+  (let [new-exp (operate-tree op expr)]
+    (if (= expr new-exp)
+      new-exp
+      (recur op new-exp))))
+
+(defn- expand-expr
+  "Tries to expand an expression as much as possible, and transform it to a canonical form."
   [expr]
   (match/match [expr]
-               ;; distribute plus through times
+               ;; distribute plus and minus through times
                [[:times a [:plus b c]]] [:plus [:times a b] [:times a c]]
                [[:times [:plus a b] c]] [:plus [:times a c] [:times b c]]
                [[:times a [:minus b c]]] [:minus [:times a b] [:times a c]]
@@ -25,9 +47,6 @@
                [[:plus a [:plus b c]]] [:plus [:plus a b] c]
                [[:minus a [:minus b c]]] [:minus [:minus a b] c]
                [[:times a [:times b c]]] [:times [:times a b] c]
-               ;; times to the right
-               ;;[[:times [:times a b] c]] [:times a [:times b c]]
-               ;;[[:plus [:plus a b] c]] [:plus a [:plus b c]]
                ;; always move numbers to the left
                [[:plus (a :guard not-number?) (b :guard number?)]] [:plus b a]
                [[:minus (a :guard not-number?) (b :guard number?)]] [:minus b a]
@@ -43,15 +62,7 @@
                [x] x
                ))
 
-(defn expand-tree
-  [expr]
-  (if (expression/non-terminal? expr)
-    (expand (expression/make-expression (first expr) (map expand-tree (rest expr))))
-    expr))
-
 (defn expand-full
+  "Tries to expand an expression as much as possible, and transform it to a canonical form."
   [expr]
-  (let [new-exp (expand-tree expr)]
-    (if (= expr new-exp)
-      new-exp
-      (recur new-exp))))
+  (operate-full expand-expr expr))
