@@ -8,7 +8,8 @@
 
 (declare d)
 
-(defn- diff-expr
+(defn- diff-non-terminal
+  "Returns the partial derivative of non-terminal `expr` with respect to `var`."
   [var expr]
   (case (first expr)
     :plus (expression/make-expression :plus (map (partial d var) (rest expr)))
@@ -21,6 +22,6 @@
   "Returns the partial derivative of `expr` with respect to `var`."
   [var expr]
   (cond
-    (expression/non-terminal? expr) (diff-expr var expr)
+    (expression/non-terminal? expr) (diff-non-terminal var expr)
     (number? expr) 0
     (symbol? expr) (if (= var expr) 1 0)))
