@@ -32,7 +32,7 @@
   [{:name :plus :arity 2}
    {:name :minus :arity 2}
    {:name :times :arity 2}
-   {:name :div :arity 2}
+   ;{:name :div :arity 2}
    {:name :sin :arity 1}
    {:name :cos :arity 1}])
 
@@ -57,11 +57,11 @@
         #(rand constant-max)))
 
 ;; Defined here because it has to be somewhere!
-(defn pdiv
-  "Protected division, which is division that doesn't blow up when the denominator is zero. Returns 1
-  instead of undefined."
-  [x y]
-  (if (zero? y) 1 (/ x y)))
+;(defn pdiv
+;  "Protected division, which is division that doesn't blow up when the denominator is zero. Returns 1
+;  instead of undefined."
+;  [x y]
+;  (if (zero? y) 1 (/ x y)))
 
 ;; * Expressions *
 
