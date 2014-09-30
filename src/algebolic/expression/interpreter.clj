@@ -20,7 +20,7 @@
                                       :plus (+ (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
                                       :minus (- (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
                                       :times (* (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-                                      :div (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+;                                      :div (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
                                       :sin (Math/sin (evaluate (nth expr 1) vars))
                                       :cos (Math/cos (evaluate (nth expr 1) vars))
                                       (println "Failed: " expr " !!!"))
