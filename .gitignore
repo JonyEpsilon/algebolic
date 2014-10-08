@@ -10,3 +10,5 @@ pom.xml.asc
 /.gorilla-port
 .idea
 *.iml
+.DS_Store
+/nb/data
