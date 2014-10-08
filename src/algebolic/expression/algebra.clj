@@ -25,7 +25,7 @@
     (op (expression/make-expression (first expr) (map (partial operate-tree op) (rest expr))))
     expr))
 
-(defn- operate-full
+(defn operate-full
   "Repeatedly applies the operation to the expression, and its sub-expressions, until the
   result no longer changes. Beware of infinte loops!"
   ;; TODO: could be more helpful here and offer a max-recursion-depth bailout.
