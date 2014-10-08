@@ -15,10 +15,12 @@
   of expression evaluation:
 
   There is a function `functionalise` for transforming expressions into Clojure functions that
-  can be called. This is useful for turning the expressions into things you can plot etc.
+  can be called. This is useful for turning the expressions into things you can plot etc. It lives
+  in the `algebolic.expression.evaluate` namespace.
 
   There is also an `interpreter` namespace which provides an alternate (and much faster)
-  mechanism for evaluating the expressions at a particular point.
+  mechanism for evaluating the expressions at a particular point. It is found in the
+  `algebolic.expression.interpreter` namespace.
 
   The `score` namespace provides score functions that use both of these implementations."
   (:refer-clojure :exclude [rand rand-nth rand-int])
