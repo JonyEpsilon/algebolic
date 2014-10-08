@@ -6,7 +6,8 @@
   "Score functions for algebolic expressions."
   (:require [algebolic.expression.core :as expression]
             [algebolic.expression.tree :as tree]
-            [algebolic.expression.interpreter :as interpreter]))
+            [algebolic.expression.interpreter :as interpreter]
+            [algebolic.expression.evaluate :as evaluate]))
 
 (defn size
   "The number of nodes in an expression."
@@ -52,7 +53,7 @@
   Uses the Clojure compiler to evaluate the expressions."
   [vars data expr]
   ;; first compile the expression into a clojure function and then evaluate at the given points.
-  (let [f (expression/functionalise expr vars)]
+  (let [f (evaluate/functionalise expr vars)]
     ;; the `double` below prevents crashes when the numbers are integers or rationals
     (apply + (map #(Math/abs (double (- (apply f (first %)) (second %)))) data))))
 

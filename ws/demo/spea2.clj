@@ -20,7 +20,8 @@
             [algebolic.evolution.selection :as selection]
             [algebolic.evolution.transform :as transform]
             [algebolic.evolution.pareto :as pareto]
-            [algebolic.algorithms.spea2 :as spea2]))
+            [algebolic.algorithms.spea2 :as spea2]
+            [algebolic.expression.render :as render]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
@@ -144,7 +145,7 @@
 (plot/compose
   (plot/list-plot (map (fn [x] [(first (first x)) (second x)]) data) :plot-range [[0 90] :all])
   (plot/plot
-    (expression/functionalise (:genotype (nth (sort-by :complexity < (:elite result)) 99)) '[x])
+    (evaluate/functionalise (:genotype (nth (sort-by :complexity < (:elite result)) 99)) '[x])
     [0 90])
   )
 ;; @@

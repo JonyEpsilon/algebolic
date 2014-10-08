@@ -27,6 +27,11 @@
 
 ;; * Functions and terminals *
 
+;; When you change the set of function symbols you have to make corresponding changes to a number of things:
+;; - the Clojure evaluator mapping table (evaluate.clj)
+;; - the interpreter (interpreter.clj)
+;; - the differentiator (differentiation.clj)
+;; - possibly the computer algebra code (algebra.clj)
 (def function-symbols
   "The primitive set of functions that algebolic expressions can be built from."
   [{:name :plus :arity 2}
@@ -56,13 +61,6 @@
   (conj (map (fn [v] (constantly v)) vars)
         #(rand constant-max)))
 
-;; Defined here because it has to be somewhere!
-(defn pdiv
-  "Protected division, which is division that doesn't blow up when the denominator is zero. Returns 1
-  instead of undefined."
-  [x y]
-  (if (zero? y) 1 (/ x y)))
-
 ;; * Expressions *
 
 (defn non-terminal?
@@ -82,38 +80,11 @@
   [function arguments]
   (vec (cons function arguments)))
 
-;; * Evaluation as clojure *
+;; * Other common code *
 
-;; TODO: not sure this belongs in this namespace
-
-(def ^:private mapping-to-clojure
-  "The default implementation of the algebolic function symbols. Should correspond to what you'd think
-  would be obvious, perhaps with the exception of div which used protected division."
-  {:plus  '+
-   :minus '-
-   :times '*
-   :div   'algebolic.expression.core/pdiv
-   :sin   'Math/sin
-   :cos   'Math/cos})
-
-(defn- to-clojure-symbols
-  "Takes an expression and an implementation and returns an equivalent expression with the function
-  symbols implemented."
-  [expr]
-  (walk/postwalk-replace mapping-to-clojure expr))
-
-(defn- to-sexp
-  "Takes an expression represented as nested vectors, and transforms it into nested sequences."
-  [expr]
-  (walk/postwalk (fn [s] (if (vector? s) (seq s) s)) expr))
-
-(defn functionalise
-  "Takes an (implemented) expression and turns it into a function that can be called to get a value.
-  The list of vars must be a quoted vector i.e. '[x y].
-
-  Note that this invokes the Clojure compiler with `eval` and thus is relatively slow (around a ms).
-  This function is useful for making functions you can plot etc, but you probably don't want to use
-  it in a loop to evaluate fitness or the like. See the `interpreter` namespace for a better way to
-  do that."
-  [ex vars]
-  (eval (list 'fn vars (to-clojure-symbols (to-sexp ex)))))
+;; Defined here because it has to be somewhere!
+(defn pdiv
+  "Protected division, which is division that doesn't blow up when the denominator is zero. Returns 1
+  instead of undefined."
+  [x y]
+  (if (zero? y) 1 (/ x y)))

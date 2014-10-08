@@ -15,7 +15,8 @@
   (:require [gorilla-plot.core :as plot]
             [clojure.walk :as walk]
             [algebolic.expression.core :as expression]
-            [algebolic.expression.interpreter :as interpreter]))
+            [algebolic.expression.interpreter :as interpreter]
+            [algebolic.expression.evaluate :as evaluate]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
@@ -36,7 +37,7 @@ expr
 ;; <=
 
 ;; @@
-(def f (expression/functionalise expr '[x]))
+(def f (evaluate/functionalise expr '[x]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/f</span>","value":"#'balmy-hurricane/f"}
@@ -50,7 +51,7 @@ expr
 ;; <=
 
 ;; @@
-(time (do (doall (repeatedly 100 #(expression/functionalise expr '[x]))) :done))
+(time (do (doall (repeatedly 100 #(evaluate/functionalise expr '[x]))) :done))
 ;; @@
 ;; ->
 ;;; &quot;Elapsed time: 65.611 msecs&quot;

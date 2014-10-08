@@ -18,7 +18,8 @@
             [algebolic.evolution.scoring :as scoring]
             [algebolic.evolution.selection :as selection]
             [algebolic.evolution.transform :as transform]
-            [algebolic.algorithms.sso :as sso]))
+            [algebolic.algorithms.sso :as sso]
+            [algebolic.expression.evaluate :as evaluate]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
@@ -197,7 +198,7 @@
 (plot/compose
   (plot/list-plot (map (fn [x] [(first (first x)) (second x)]) data-sin))
   (plot/plot
-    (expression/functionalise (:genotype (first (sort-by :error < (:rabble result)))) '[x])
+    (evaluate/functionalise (:genotype (first (sort-by :error < (:rabble result)))) '[x])
     [0 50])
   )
 ;; @@
