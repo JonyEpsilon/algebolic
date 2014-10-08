@@ -36,32 +36,33 @@
       (recur op new-exp))))
 
 (defn- expand-expr
-  "Tries to expand an expression as much as possible, and transform it to a canonical form."
+  "Tries to expand an expression as much as possible, and transform it to a canonical form. Doesn't do very well
+  at the moment!"
+  ;; TODO: this doesn't really work at the moment.
   [expr]
   (match/match [expr]
-               ;; distribute plus and minus through times
-               [[:times a [:plus b c]]] [:plus [:times a b] [:times a c]]
-               [[:times [:plus a b] c]] [:plus [:times a c] [:times b c]]
-               [[:times a [:minus b c]]] [:minus [:times a b] [:times a c]]
-               [[:times [:minus a b] c]] [:minus [:times a c] [:times b c]]
-               ;; associative operations to the left
-               [[:plus a [:plus b c]]] [:plus [:plus a b] c]
-               [[:minus a [:minus b c]]] [:minus [:minus a b] c]
-               [[:times a [:times b c]]] [:times [:times a b] c]
-               ;; always move numbers to the left
-               [[:plus (a :guard not-number?) (b :guard number?)]] [:plus b a]
-               [[:minus (a :guard not-number?) (b :guard number?)]] [:minus b a]
-               [[:times (a :guard not-number?) (b :guard number?)]] [:times b a]
-               ;; reduce arithmetic operations on numbers
-               [[:plus (a :guard number?) (b :guard number?)]] (+ a b)
-               [[:minus (a :guard number?) (b :guard number?)]] (- a b)
-               [[:times (a :guard number?) (b :guard number?)]] (* a b)
-               ;; reduce trig operations on numbers
-               [[:cos (a :guard number?)]] (Math/cos a)
-               [[:sin (a :guard number?)]] (Math/sin a)
-               ;; leave everything else
-               [x] x
-               ))
+    ;; distribute plus and minus through times
+    [[:times a [:plus b c]]] [:plus [:times a b] [:times a c]]
+    [[:times [:plus a b] c]] [:plus [:times a c] [:times b c]]
+    [[:times a [:minus b c]]] [:minus [:times a b] [:times a c]]
+    [[:times [:minus a b] c]] [:minus [:times a c] [:times b c]]
+    ;; associative operations to the left
+    [[:plus a [:plus b c]]] [:plus [:plus a b] c]
+    [[:minus a [:minus b c]]] [:minus [:minus a b] c]
+    [[:times a [:times b c]]] [:times [:times a b] c]
+    ;; always move numbers to the left
+    [[:plus (a :guard not-number?) (b :guard number?)]] [:plus b a]
+    [[:minus (a :guard not-number?) (b :guard number?)]] [:minus b a]
+    [[:times (a :guard not-number?) (b :guard number?)]] [:times b a]
+    ;; reduce arithmetic operations on numbers
+    [[:plus (a :guard number?) (b :guard number?)]] (+ a b)
+    [[:minus (a :guard number?) (b :guard number?)]] (- a b)
+    [[:times (a :guard number?) (b :guard number?)]] (* a b)
+    ;; reduce trig operations on numbers
+    [[:cos (a :guard number?)]] (Math/cos a)
+    [[:sin (a :guard number?)]] (Math/sin a)
+    ;; leave everything else
+    [x] x))
 
 (defn expand-full
   "Tries to expand an expression as much as possible, and transform it to a canonical form."
