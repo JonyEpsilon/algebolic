@@ -34,6 +34,7 @@
 ;; - the interpreter (interpreter.clj)
 ;; - the differentiator (differentiation.clj)
 ;; - possibly the computer algebra code (algebra.clj)
+;; - the Mathematica export code (mma.clj)
 (def function-symbols
   "The primitive set of functions that algebolic expressions can be built from."
   [{:name :plus :arity 2}
