@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.expression.evaluate
   "Evaluating algebolic expressions as Clojure code."
   (:require [clojure.walk :as walk]))

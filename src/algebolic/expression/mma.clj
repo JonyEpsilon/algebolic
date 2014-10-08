@@ -1,3 +1,7 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.expression.mma
   "Some functions for using Mathematica with algebolic expressions."
   (:require [algebolic.expression.core :as expression]))

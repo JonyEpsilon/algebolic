@@ -1,9 +1,16 @@
+;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
+;;;;
+;;;; Not for distribution.
+
 (ns algebolic.expression.render
+  "Gorilla REPL rendering support for algebolic expressions."
   (:require [algebolic.expression.core :as expression]
             [clojure.string :as str]
             [gorilla-renderable.core :as render]))
 
-(defn latexify
+(defn- latexify
+  "Convert an expression to a LaTeX string. Uses a very simple algorithm, that doesn't generate terribly
+  pretty results."
   [expr]
   (if (expression/non-terminal? expr)
     (case (first expr)
@@ -18,6 +25,7 @@
 (defrecord ExprLatexView [expr])
 
 (defn mathematician-view
+  "View an algebolic expression in more traditional mathematical notation."
   [expr]
   (ExprLatexView. expr))
 

@@ -36,8 +36,7 @@
       (recur op new-exp))))
 
 (defn- expand-expr
-  "Tries to expand an expression as much as possible, and transform it to a canonical form. Doesn't do very well
-  at the moment!"
+  "Tries to expand an expression as much as possible, and transform it to a canonical form."
   ;; TODO: this doesn't really work at the moment.
   [expr]
   (match/match [expr]
@@ -65,6 +64,7 @@
     [x] x))
 
 (defn expand-full
-  "Tries to expand an expression as much as possible, and transform it to a canonical form."
+  "Tries to expand an expression as much as possible, and transform it to a canonical form.  Doesn't do very well
+  at the moment!"
   [expr]
   (operate-full expand-expr expr))
