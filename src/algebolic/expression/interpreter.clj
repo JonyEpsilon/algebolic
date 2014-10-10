@@ -16,13 +16,15 @@
   ;; TODO: if I knew any computer science I could probably re-write this as a stack based interpreter
   ;; TODO: or something similar that was less abusive to the Java stack (and probably faster).
   (cond
-    (expression/non-terminal? expr) (case (first expr)
-                                      :plus (+ (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-                                      :minus (- (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-                                      :times (* (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-                                      :div (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-                                      :sin (Math/sin (evaluate (nth expr 1) vars))
-                                      :cos (Math/cos (evaluate (nth expr 1) vars))
-                                      (println "Failed: " expr " !!!"))
+    (number? expr) expr
     (symbol? expr) (expr vars)
-    (number? expr) expr))
+    ;; this is a performance optimisation. In principle we would be testing here whether we are dealing
+    ;; with a non-terminal expression. But, because it's neither of the above it must be, so skip the test.
+    true (case (first expr)
+           :plus (+ (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+           :minus (- (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+           :times (* (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+           :div (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+           :sin (Math/sin (evaluate (nth expr 1) vars))
+           :cos (Math/cos (evaluate (nth expr 1) vars))
+           (println "Failed: " expr " !!!"))))
