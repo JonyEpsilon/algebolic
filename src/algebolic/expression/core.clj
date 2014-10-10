@@ -38,12 +38,12 @@
 ;; - the LaTex export code (render.clj)
 (def function-symbols
   "The primitive set of functions that algebolic expressions can be built from."
-  [{:name :plus :arity 2}
-   {:name :minus :arity 2}
-   {:name :times :arity 2}
-   {:name :div :arity 2}
-   {:name :sin :arity 1}
-   {:name :cos :arity 1}])
+  [{:name 0 :friendly-name :plus :arity 2}
+   {:name 1 :friendly-name :minus :arity 2}
+   {:name 2 :friendly-name :times :arity 2}
+   {:name 3 :friendly-name :div :arity 2}
+   {:name 4 :friendly-name :sin :arity 1}
+   {:name 5 :friendly-name :cos :arity 1}])
 
 (defn get-function-symbols
   "A helper for selecting a subset of the function symbols. Pass the names of the symbols you

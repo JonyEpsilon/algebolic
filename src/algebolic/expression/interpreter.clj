@@ -20,11 +20,11 @@
     (symbol? expr) (expr vars)
     ;; this is a performance optimisation. In principle we would be testing here whether we are dealing
     ;; with a non-terminal expression. But, because it's neither of the above it must be, so skip the test.
-    true (case (first expr)
-           :plus (+ (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-           :minus (- (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-           :times (* (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-           :div (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
-           :sin (Math/sin (evaluate (nth expr 1) vars))
-           :cos (Math/cos (evaluate (nth expr 1) vars))
-           (println "Failed: " expr " !!!"))))
+    true (let [opcode (nth expr 0)]
+           (cond
+             (= opcode 0) (+ (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+             (= opcode 1) (- (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+             (= opcode 2) (* (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+             (= opcode 3) (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
+             (= opcode 4) (Math/sin (evaluate (nth expr 1) vars))
+             (= opcode 5) (Math/cos (evaluate (nth expr 1) vars))))))
