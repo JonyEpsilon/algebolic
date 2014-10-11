@@ -9,4 +9,4 @@
                  [gorilla-renderable "1.0.0"]
                  [criterium "0.4.3"]]
   :plugins [[lein-gorilla "0.3.4-SNAPSHOT"]]
-  :jvm-opts ["-server" "-Xmx4g"])
+  :jvm-opts ["-Xmx4g"])
