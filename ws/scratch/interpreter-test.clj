@@ -24,7 +24,7 @@
 ;; <=
 
 ;; @@
-(def expr [:plus [:times 'x 'x] 'x])
+(def expr [:plus [:times [:var 0] [:var 0]] [:var 0]])
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/expr</span>","value":"#'balmy-hurricane/expr"}
@@ -34,7 +34,7 @@
 expr
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:plus [:times x x] x]"}
+;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:var</span>","value":":var"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:var 0]"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:var</span>","value":":var"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:var 0]"}],"value":"[:times [:var 0] [:var 0]]"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:var</span>","value":":var"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:var 0]"}],"value":"[:plus [:times [:var 0] [:var 0]] [:var 0]]"}
 ;; <=
 
 ;; @@
@@ -47,15 +47,12 @@ expr
 ;; @@
 (f 3)
 ;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-long'>12</span>","value":"12"}
-;; <=
 
 ;; @@
 (time (do (doall (repeatedly 100 #(evaluate/functionalise expr '[x]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 109.865 msecs&quot;
+;;; &quot;Elapsed time: 106.656 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -66,7 +63,7 @@ expr
 (time (do (doall (repeatedly 100 #(f 3))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 0.432 msecs&quot;
+;;; &quot;Elapsed time: 0.399 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -74,10 +71,10 @@ expr
 ;; <=
 
 ;; @@
-(time (do (doall (repeatedly 100000 #(interpreter/evaluate expr {'x 3}))) :done))
+(time (do (doall (repeatedly 100000 #(interpreter/evaluate expr [3]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 14.552 msecs&quot;
+;;; &quot;Elapsed time: 49.118 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -85,7 +82,7 @@ expr
 ;; <=
 
 ;; @@
-(interpreter/evaluate expr {'x 7})
+(interpreter/evaluate expr [7])
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-long'>56</span>","value":"56"}
@@ -94,31 +91,72 @@ expr
 ;; @@
 (criterium/with-progress-reporting
   (criterium/quick-bench
-    (interpreter/evaluate [:plus 4.0 0.0] {'x 3.0})
+    (interpreter/evaluate expr [3.0])
     :verbose))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 256430 iterations
+;;;   compilation occured before 129884 iterations
+;;;   compilation occured before 259754 iterations
+;;;   compilation occured before 389624 iterations
+;;;   compilation occured before 11038964 iterations
+;;;   compilation occured before 11168834 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 45.82883390584968 % of runtime
+;;; WARNING: Final GC required 63.09181317676532 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
 ;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
 ;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
 ;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
-;;; Evaluation count : 3104574 in 6 samples of 517429 calls.
-;;;       Execution time sample mean : 192.297520 ns
-;;;              Execution time mean : 192.304928 ns
-;;; Execution time sample std-deviation : 2.435945 ns
-;;;     Execution time std-deviation : 2.435171 ns
-;;;    Execution time lower quantile : 191.026170 ns ( 2.5%)
-;;;    Execution time upper quantile : 196.498901 ns (97.5%)
-;;;                    Overhead used : 1.587696 ns
+;;; Evaluation count : 3901110 in 6 samples of 650185 calls.
+;;;       Execution time sample mean : 150.557777 ns
+;;;              Execution time mean : 150.531630 ns
+;;; Execution time sample std-deviation : 2.173764 ns
+;;;     Execution time std-deviation : 2.264377 ns
+;;;    Execution time lower quantile : 148.153076 ns ( 2.5%)
+;;;    Execution time upper quantile : 153.176454 ns (97.5%)
+;;;                    Overhead used : 1.902678 ns
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(criterium/with-progress-reporting
+  (criterium/quick-bench
+    (:op q)
+    :verbose))
+;; @@
+;; ->
+;;; Warming up for JIT optimisations 5000000000 ...
+;;;   compilation occured before 1449375 iterations
+;;;   compilation occured before 143478325 iterations
+;;;   compilation occured before 144927600 iterations
+;;;   compilation occured before 146376875 iterations
+;;; Estimating execution count ...
+;;; Sampling ...
+;;; Final GC...
+;;; Checking GC...
+;;; WARNING: Final GC required 60.42802284031966 % of runtime
+;;; Finding outliers ...
+;;; Bootstrapping ...
+;;; Checking outlier significance
+;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
+;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
+;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
+;;; Evaluation count : 65660418 in 6 samples of 10943403 calls.
+;;;       Execution time sample mean : 7.074298 ns
+;;;              Execution time mean : 7.074298 ns
+;;; Execution time sample std-deviation : 0.086107 ns
+;;;     Execution time std-deviation : 0.091621 ns
+;;;    Execution time lower quantile : 6.963394 ns ( 2.5%)
+;;;    Execution time upper quantile : 7.205287 ns (97.5%)
+;;;                    Overhead used : 1.902678 ns
 ;;; 
 ;;; Found 1 outliers in 6 samples (16.6667 %)
 ;;; 	low-severe	 1 (16.6667 %)
@@ -130,97 +168,71 @@ expr
 ;; <=
 
 ;; @@
-(defn raw-fn2
-  [x]
-  (+ (* x x) x))
+(def ir interpreter/itr)
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/raw-fn2</span>","value":"#'balmy-hurricane/raw-fn2"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/ir</span>","value":"#'balmy-hurricane/ir"}
 ;; <=
 
 ;; @@
-(criterium/with-progress-reporting (criterium/quick-bench (raw-fn2 3.0) :verbose))
+(def q (ir 0 (ir 2 (ir 7 0) (ir 7 0)) (ir 7 0)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/q</span>","value":"#'balmy-hurricane/q"}
+;; <=
+
+;; @@
+q
+;; @@
+;; =>
+;;; {"type":"list-like","open":"<span class='clj-record'>#algebolic.expression.interpreter.Instruction{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:op</span>","value":":op"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:op 0]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg1</span>","value":":arg1"},{"type":"list-like","open":"<span class='clj-record'>#algebolic.expression.interpreter.Instruction{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:op</span>","value":":op"},{"type":"html","content":"<span class='clj-long'>2</span>","value":"2"}],"value":"[:op 2]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg1</span>","value":":arg1"},{"type":"list-like","open":"<span class='clj-record'>#algebolic.expression.interpreter.Instruction{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:op</span>","value":":op"},{"type":"html","content":"<span class='clj-long'>7</span>","value":"7"}],"value":"[:op 7]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg1</span>","value":":arg1"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:arg1 0]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg2</span>","value":":arg2"},{"type":"html","content":"<span class='clj-double'>0.0</span>","value":"0.0"}],"value":"[:arg2 0.0]"}],"value":"#algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}"}],"value":"[:arg1 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg2</span>","value":":arg2"},{"type":"list-like","open":"<span class='clj-record'>#algebolic.expression.interpreter.Instruction{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:op</span>","value":":op"},{"type":"html","content":"<span class='clj-long'>7</span>","value":"7"}],"value":"[:op 7]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg1</span>","value":":arg1"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:arg1 0]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg2</span>","value":":arg2"},{"type":"html","content":"<span class='clj-double'>0.0</span>","value":"0.0"}],"value":"[:arg2 0.0]"}],"value":"#algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}"}],"value":"[:arg2 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}]"}],"value":"#algebolic.expression.interpreter.Instruction{:op 2, :arg1 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}, :arg2 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}}"}],"value":"[:arg1 #algebolic.expression.interpreter.Instruction{:op 2, :arg1 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}, :arg2 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}}]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg2</span>","value":":arg2"},{"type":"list-like","open":"<span class='clj-record'>#algebolic.expression.interpreter.Instruction{</span>","close":"<span class='clj-record'>}</span>","separator":" ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:op</span>","value":":op"},{"type":"html","content":"<span class='clj-long'>7</span>","value":"7"}],"value":"[:op 7]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg1</span>","value":":arg1"},{"type":"html","content":"<span class='clj-long'>0</span>","value":"0"}],"value":"[:arg1 0]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:arg2</span>","value":":arg2"},{"type":"html","content":"<span class='clj-double'>0.0</span>","value":"0.0"}],"value":"[:arg2 0.0]"}],"value":"#algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}"}],"value":"[:arg2 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}]"}],"value":"#algebolic.expression.interpreter.Instruction{:op 0, :arg1 #algebolic.expression.interpreter.Instruction{:op 2, :arg1 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}, :arg2 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}}, :arg2 #algebolic.expression.interpreter.Instruction{:op 7, :arg1 0, :arg2 0.0}}"}
+;; <=
+
+;; @@
+(interpreter/evaluate-rec q [3.0])
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-double'>12.0</span>","value":"12.0"}
+;; <=
+
+;; @@
+(criterium/with-progress-reporting
+  (criterium/quick-bench
+    (interpreter/evaluate-rec q [3.0])
+    :verbose))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 961588 iterations
-;;;   compilation occured before 2884664 iterations
+;;;   compilation occured before 33 iterations
+;;;   compilation occured before 149509 iterations
+;;;   compilation occured before 448461 iterations
+;;;   compilation occured before 1345317 iterations
+;;;   compilation occured before 19282437 iterations
+;;;   compilation occured before 19431913 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 50.91737035327709 % of runtime
+;;; WARNING: Final GC required 32.98901319450617 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
 ;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
 ;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
 ;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
-;;; Evaluation count : 35560038 in 6 samples of 5926673 calls.
-;;;       Execution time sample mean : 15.160964 ns
-;;;              Execution time mean : 15.154074 ns
-;;; Execution time sample std-deviation : 0.439932 ns
-;;;     Execution time std-deviation : 0.455624 ns
-;;;    Execution time lower quantile : 14.765155 ns ( 2.5%)
-;;;    Execution time upper quantile : 15.658130 ns (97.5%)
-;;;                    Overhead used : 1.587696 ns
+;;; Evaluation count : 4671618 in 6 samples of 778603 calls.
+;;;       Execution time sample mean : 129.318231 ns
+;;;              Execution time mean : 129.282911 ns
+;;; Execution time sample std-deviation : 2.842865 ns
+;;;     Execution time std-deviation : 2.955372 ns
+;;;    Execution time lower quantile : 125.914485 ns ( 2.5%)
+;;;    Execution time upper quantile : 132.860098 ns (97.5%)
+;;;                    Overhead used : 1.904185 ns
 ;;; 
 ;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
 ;; <=
-
-;; @@
-(criterium/with-progress-reporting (criterium/quick-bench (evaluate/functionalise expr '[x]) :verbose))
-;; @@
-;; ->
-;;; Warming up for JIT optimisations 5000000000 ...
-;;;   classes loaded before 1 iterations
-;;;   compilation occured before 1 iterations
-;;;   classes loaded before 983 iterations
-;;;   compilation occured before 983 iterations
-;;;   classes loaded before 1965 iterations
-;;;   classes loaded before 2947 iterations
-;;;   compilation occured before 2947 iterations
-;;;   classes loaded before 3929 iterations
-;;;   classes loaded before 4911 iterations
-;;;   compilation occured before 4911 iterations
-;;;   classes loaded before 5893 iterations
-;;;   compilation occured before 5893 iterations
-;;;   classes loaded before 6875 iterations
-;;;   compilation occured before 6875 iterations
-;;;   classes loaded before 7857 iterations
-;;;   compilation occured before 7857 iterations
-;;;   classes loaded before 8839 iterations
-;;;   classes loaded before 9821 iterations
-;;;   compilation occured before 9821 iterations
-;;;   classes loaded before 10803 iterations
-;;;   classes loaded before 11785 iterations
-;;;   compilation occured before 11785 iterations
-;;;   classes loaded before 12767 iterations
-;;;   classes loaded before 13749 iterations
-;;;   classes loaded before 14731 iterations
-;;;   classes loaded before 15713 iterations
-;;;   classes loaded before 16695 iterations
-;;;   classes loaded before 17677 iterations
-;;;   classes loaded before 18659 iterations
-;;;   classes loaded before 19641 iterations
-;;;   classes loaded before 20623 iterations
-;;;   classes loaded before 21605 iterations
-;;;   classes loaded before 22587 iterations
-;;;   classes loaded before 23569 iterations
-;;;   classes loaded before 24551 iterations
-;;;   classes loaded before 25533 iterations
-;;;   classes loaded before 26515 iterations
-;;;   classes loaded before 27497 iterations
-;;;   classes loaded before 28479 iterations
-;;;   classes loaded before 29461 iterations
-;;;   classes loaded before 30443 iterations
-;;;   classes loaded before 31425 iterations
-;;;   classes loaded before 32407 iterations
-;;;   classes loaded before 33389 iterations
-;;; 
-;; <-
 
 ;; @@
 
