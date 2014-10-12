@@ -96,30 +96,31 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 129884 iterations
-;;;   compilation occured before 259754 iterations
-;;;   compilation occured before 389624 iterations
-;;;   compilation occured before 11038964 iterations
-;;;   compilation occured before 11168834 iterations
+;;;   compilation occured before 210546 iterations
+;;;   compilation occured before 27157874 iterations
+;;;   compilation occured before 27368400 iterations
+;;;   compilation occured before 27578926 iterations
+;;;   compilation occured before 27789452 iterations
+;;;   compilation occured before 27999978 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 63.09181317676532 % of runtime
+;;; WARNING: Final GC required 48.9934217651921 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
 ;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
 ;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
 ;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
-;;; Evaluation count : 3901110 in 6 samples of 650185 calls.
-;;;       Execution time sample mean : 150.557777 ns
-;;;              Execution time mean : 150.531630 ns
-;;; Execution time sample std-deviation : 2.173764 ns
-;;;     Execution time std-deviation : 2.264377 ns
-;;;    Execution time lower quantile : 148.153076 ns ( 2.5%)
-;;;    Execution time upper quantile : 153.176454 ns (97.5%)
-;;;                    Overhead used : 1.902678 ns
+;;; Evaluation count : 3881214 in 6 samples of 646869 calls.
+;;;       Execution time sample mean : 154.520584 ns
+;;;              Execution time mean : 154.514142 ns
+;;; Execution time sample std-deviation : 2.010962 ns
+;;;     Execution time std-deviation : 2.107593 ns
+;;;    Execution time lower quantile : 152.522755 ns ( 2.5%)
+;;;    Execution time upper quantile : 156.804920 ns (97.5%)
+;;;                    Overhead used : 1.904185 ns
 ;;; 
 ;; <-
 ;; =>
@@ -203,30 +204,25 @@ q
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 33 iterations
-;;;   compilation occured before 149509 iterations
-;;;   compilation occured before 448461 iterations
-;;;   compilation occured before 1345317 iterations
-;;;   compilation occured before 19282437 iterations
-;;;   compilation occured before 19431913 iterations
+;;;   compilation occured before 632961 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 32.98901319450617 % of runtime
+;;; WARNING: Final GC required 46.6136484687365 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
 ;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
 ;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
 ;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
-;;; Evaluation count : 4671618 in 6 samples of 778603 calls.
-;;;       Execution time sample mean : 129.318231 ns
-;;;              Execution time mean : 129.282911 ns
-;;; Execution time sample std-deviation : 2.842865 ns
-;;;     Execution time std-deviation : 2.955372 ns
-;;;    Execution time lower quantile : 125.914485 ns ( 2.5%)
-;;;    Execution time upper quantile : 132.860098 ns (97.5%)
+;;; Evaluation count : 4428132 in 6 samples of 738022 calls.
+;;;       Execution time sample mean : 139.061126 ns
+;;;              Execution time mean : 139.119389 ns
+;;; Execution time sample std-deviation : 5.463746 ns
+;;;     Execution time std-deviation : 5.701333 ns
+;;;    Execution time lower quantile : 133.351946 ns ( 2.5%)
+;;;    Execution time upper quantile : 147.370668 ns (97.5%)
 ;;;                    Overhead used : 1.904185 ns
 ;;; 
 ;; <-
