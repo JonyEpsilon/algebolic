@@ -12,7 +12,7 @@
 
 ;; @@
 (ns thriving-mountain
-  (:import [algebolic.expression TestExpressionFactory])
+  (:import [algebolic.expression.interpreter Plus Times Var Constant JExpr])
   (:require [gorilla-plot.core :as plot]
             [criterium.core :as criterium]))
 ;; @@
@@ -28,13 +28,6 @@
 ;; <=
 
 ;; @@
-(def ^algebolic.expression.Expression testExpr (TestExpressionFactory/getTestExpression1))
-;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;thriving-mountain/testExpr</span>","value":"#'thriving-mountain/testExpr"}
-;; <=
-
-;; @@
 (def ^doubles arg (double-array [3.0]))
 ;; @@
 ;; =>
@@ -42,48 +35,72 @@
 ;; <=
 
 ;; @@
-(.evaluate testExpr arg)
+(defn bje
+  [expr]
+  (cond
+    (number? expr) (Constant. expr)
+    true (case (nth expr 0)
+           :plus (Plus. (bje (nth expr 1)) (bje (nth expr 2)))
+           :times (Plus. (bje (nth expr 1)) (bje (nth expr 2))))))
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-double'>19.0</span>","value":"19.0"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;thriving-mountain/bje</span>","value":"#'thriving-mountain/bje"}
+;; <=
+
+;; @@
+(def ^Expression exp (bje [:plus [:times 3.0 4.0] 7.0]))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;thriving-mountain/exp</span>","value":"#'thriving-mountain/exp"}
+;; <=
+
+;; @@
+exp
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.interpreter.Plus@250c31ed&gt;</span>","value":"#<Plus algebolic.expression.interpreter.Plus@250c31ed>"}
+;; <=
+
+;; @@
+(.evaluate exp arg)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-double'>14.0</span>","value":"14.0"}
 ;; <=
 
 ;; @@
 (criterium/with-progress-reporting
   (criterium/quick-bench
-    (.evaluate testExpr arg)
+    (.evaluate exp arg)
     :verbose))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 595288 iterations
-;;;   compilation occured before 1785764 iterations
-;;;   compilation occured before 4166716 iterations
-;;;   compilation occured before 4761954 iterations
-;;;   compilation occured before 76785752 iterations
+;;;   compilation occured before 20836 iterations
+;;;   compilation occured before 62502 iterations
+;;;   compilation occured before 2999955 iterations
+;;;   compilation occured before 3062454 iterations
+;;;   compilation occured before 3124953 iterations
+;;;   compilation occured before 3166619 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 63.67554855037633 % of runtime
+;;; WARNING: Final GC required 51.39028764618517 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
 ;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
 ;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
 ;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
-;;; Evaluation count : 49163586 in 6 samples of 8193931 calls.
-;;;       Execution time sample mean : 10.227444 ns
-;;;              Execution time mean : 10.227444 ns
-;;; Execution time sample std-deviation : 0.524201 ns
-;;;     Execution time std-deviation : 0.526168 ns
-;;;    Execution time lower quantile : 9.886195 ns ( 2.5%)
-;;;    Execution time upper quantile : 11.119486 ns (97.5%)
-;;;                    Overhead used : 2.000651 ns
-;;; 
-;;; Found 1 outliers in 6 samples (16.6667 %)
-;;; 	low-severe	 1 (16.6667 %)
-;;;  Variance from outliers : 13.9336 % Variance is moderately inflated by outliers
+;;; Evaluation count : 51056208 in 6 samples of 8509368 calls.
+;;;       Execution time sample mean : 10.190285 ns
+;;;              Execution time mean : 10.195749 ns
+;;; Execution time sample std-deviation : 0.397543 ns
+;;;     Execution time std-deviation : 0.431341 ns
+;;;    Execution time lower quantile : 9.845900 ns ( 2.5%)
+;;;    Execution time upper quantile : 10.736565 ns (97.5%)
+;;;                    Overhead used : 1.895866 ns
 ;;; 
 ;; <-
 ;; =>
