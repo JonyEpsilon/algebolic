@@ -8,5 +8,6 @@
                  [org.clojure/core.match "0.2.1"]
                  [gorilla-renderable "1.0.0"]
                  [criterium "0.4.3"]]
+  :java-source-paths ["java"]
   :plugins [[lein-gorilla "0.3.4-SNAPSHOT"]]
   :jvm-opts ["-Xmx4g"])
