@@ -55,7 +55,7 @@ expr
 (time (do (doall (repeatedly 100 #(evaluate/functionalise expr '[x]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 79.161 msecs&quot;
+;;; &quot;Elapsed time: 85.393 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -66,7 +66,7 @@ expr
 (time (do (doall (repeatedly 100 #(f 3))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 0.365 msecs&quot;
+;;; &quot;Elapsed time: 0.4 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -74,8 +74,15 @@ expr
 ;; <=
 
 ;; @@
-(time (do (doall (repeatedly 100000 #(interpreter/evaluate expr [3]))) :done))
+(time (do (doall (repeatedly 100000 #(interpreter/evaluate expr {'x 3}))) :done))
 ;; @@
+;; ->
+;;; &quot;Elapsed time: 109.005 msecs&quot;
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-keyword'>:done</span>","value":":done"}
+;; <=
 
 ;; @@
 (interpreter/evaluate expr {'x 7})
@@ -92,26 +99,76 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 124237 iterations
+;;;   compilation occured before 322600 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 51.87962624405742 % of runtime
+;;; WARNING: Final GC required 45.04732524726079 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
 ;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
 ;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
 ;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
-;;; Evaluation count : 4054650 in 6 samples of 675775 calls.
-;;;       Execution time sample mean : 136.656481 ns
-;;;              Execution time mean : 136.492472 ns
-;;; Execution time sample std-deviation : 2.006614 ns
-;;;     Execution time std-deviation : 2.169094 ns
-;;;    Execution time lower quantile : 134.141097 ns ( 2.5%)
-;;;    Execution time upper quantile : 138.546410 ns (97.5%)
-;;;                    Overhead used : 1.904185 ns
+;;; Evaluation count : 4404354 in 6 samples of 734059 calls.
+;;;       Execution time sample mean : 137.797370 ns
+;;;              Execution time mean : 137.846412 ns
+;;; Execution time sample std-deviation : 6.153969 ns
+;;;     Execution time std-deviation : 6.178583 ns
+;;;    Execution time lower quantile : 134.232034 ns ( 2.5%)
+;;;    Execution time upper quantile : 148.058580 ns (97.5%)
+;;;                    Overhead used : 1.923234 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(interpreter/evaluate-d [:plus [:times 'x 'x] [:times 3.0 'y]] {'x 2.0 'y 7.0} 'y)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-double'>3.0</span>","value":"3.0"}
+;; <=
+
+;; @@
+(criterium/with-progress-reporting
+  (criterium/quick-bench
+    (interpreter/evaluate-d expr {'x 3.0} 'x)
+    :verbose))
+;; @@
+;; ->
+;;; Warming up for JIT optimisations 5000000000 ...
+;;;   compilation occured before 91753 iterations
+;;;   compilation occured before 183496 iterations
+;;; Estimating execution count ...
+;;; Sampling ...
+;;; Final GC...
+;;; Checking GC...
+;;; WARNING: Final GC required 43.70787386114288 % of runtime
+;;; Finding outliers ...
+;;; Bootstrapping ...
+;;; Checking outlier significance
+;;; x86_64 Mac OS X 10.9.5 4 cpu(s)
+;;; Java HotSpot(TM) 64-Bit Server VM 25.5-b02
+;;; Runtime arguments: -Dfile.encoding=UTF-8 -Xmx4g -Dclojure.compile.path=/Users/jony/Documents/Work/Computing/ProjectX/Projects/algebolic/target/classes -Dalgebolic.version=0.1.0-SNAPSHOT -Dclojure.debug=false
+;;; Evaluation count : 1480734 in 6 samples of 246789 calls.
+;;;       Execution time sample mean : 405.234973 ns
+;;;              Execution time mean : 405.338975 ns
+;;; Execution time sample std-deviation : 5.478727 ns
+;;;     Execution time std-deviation : 5.491942 ns
+;;;    Execution time lower quantile : 401.956193 ns ( 2.5%)
+;;;    Execution time upper quantile : 414.738368 ns (97.5%)
+;;;                    Overhead used : 1.923234 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
 ;;; 
 ;; <-
 ;; =>

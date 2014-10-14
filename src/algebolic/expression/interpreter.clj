@@ -22,3 +22,28 @@
            :div (expression/pdiv (evaluate (nth expr 1) vars) (evaluate (nth expr 2) vars))
            :sin (Math/sin (evaluate (nth expr 1) vars))
            :cos (Math/cos (evaluate (nth expr 1) vars)))))
+
+(defn evaluate-with-d
+  [expr vars d-var]
+  (cond
+    (symbol? expr) [(expr vars) (if (= expr d-var) 1 0)]
+    (number? expr) [expr 0]
+    true (case (nth expr 0)
+           :plus (let [arg1 (evaluate-with-d (nth expr 1) vars d-var)
+                       arg2 (evaluate-with-d (nth expr 2) vars d-var)]
+                   [(+ (nth arg1 0) (nth arg2 0)) (+ (nth arg1 1) (nth arg2 1))])
+           :minus (let [arg1 (evaluate-with-d (nth expr 1) vars d-var)
+                       arg2 (evaluate-with-d (nth expr 2) vars d-var)]
+                   [(- (nth arg1 0) (nth arg2 0)) (- (nth arg1 1) (nth arg2 1))])
+           :times (let [arg1 (evaluate-with-d (nth expr 1) vars d-var)
+                        arg2 (evaluate-with-d (nth expr 2) vars d-var)]
+                    [(* (nth arg1 0) (nth arg2 0)) (+ (* (nth arg1 0) (nth arg2 1)) (* (nth arg1 1) (nth arg2 0)))])
+           :sin (let [arg (evaluate-with-d (nth expr 1) vars d-var)]
+                  [(Math/sin (nth arg 0)) (* (nth arg 1) (Math/cos (nth arg 0)))])
+           :cos (let [arg (evaluate-with-d (nth expr 1) vars d-var)]
+                  [(Math/cos (nth arg 0)) (* -1.0 (nth arg 1) (Math/sin (nth arg 0)))])
+           )))
+
+(defn evaluate-d
+  [expr var d-var]
+  (nth (evaluate-with-d expr var d-var) 1))
