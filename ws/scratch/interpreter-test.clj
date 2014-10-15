@@ -116,7 +116,7 @@ expr
 (score/abs-error vars coords values ex)
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-double'>6.720024536832625E-10</span>","value":"6.720024536832625E-10"}
+;;; {"type":"html","content":"<span class='clj-double'>4639.759059650429</span>","value":"4639.759059650429"}
 ;; <=
 
 ;; @@
@@ -127,22 +127,20 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 2545 iterations
-;;;   compilation occured before 7633 iterations
-;;;   compilation occured before 89041 iterations
+;;;   compilation occured before 6491 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 50.845711283994646 % of runtime
+;;; WARNING: Final GC required 33.107417058173 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 19212 in 6 samples of 3202 calls.
-;;;              Execution time mean : 31.995613 µs
-;;;     Execution time std-deviation : 1.369809 µs
-;;;    Execution time lower quantile : 30.937472 µs ( 2.5%)
-;;;    Execution time upper quantile : 33.693289 µs (97.5%)
+;;; Evaluation count : 936 in 6 samples of 156 calls.
+;;;              Execution time mean : 633.054688 µs
+;;;     Execution time std-deviation : 9.701450 µs
+;;;    Execution time lower quantile : 620.100628 µs ( 2.5%)
+;;;    Execution time upper quantile : 640.743256 µs (97.5%)
 ;;;                    Overhead used : 1.940878 ns
 ;;; 
 ;; <-
