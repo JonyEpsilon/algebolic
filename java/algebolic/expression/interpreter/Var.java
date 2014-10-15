@@ -4,6 +4,8 @@
 
 package algebolic.expression.interpreter;
 
+import java.util.List;
+
 public class Var implements JExpr {
 
     private int index;
@@ -12,7 +14,7 @@ public class Var implements JExpr {
         this.index = index;
     }
 
-    public double evaluate(double[] vars) {
-        return vars[index];
+    public double evaluate(List<Double> vars) {
+        return vars.get(index);
     }
 }

@@ -4,6 +4,9 @@
 
 package algebolic.expression.interpreter;
 
+import java.util.List;
+
+/* Interface for classes used in the interpreter's internal representation of algebolic expressions. */
 public interface JExpr {
-    public double evaluate(double[] vars);
+    public double evaluate(List<Double> vars);
 }

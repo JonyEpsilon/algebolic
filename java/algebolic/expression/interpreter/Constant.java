@@ -4,6 +4,8 @@
 
 package algebolic.expression.interpreter;
 
+import java.util.List;
+
 public class Constant implements JExpr {
     private double c;
 
@@ -11,7 +13,7 @@ public class Constant implements JExpr {
         this.c = c;
     }
 
-    public double evaluate(double[] vars) {
+    public double evaluate(List<Double> vars) {
         return c;
     }
 }

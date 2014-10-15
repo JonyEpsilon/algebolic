@@ -36,7 +36,7 @@
 ;; <=
 
 ;; @@
-(def ^JExpr exp (interpreter/->jexpr [:plus [:times 4.0 4.0] 5.0]))
+(def ^JExpr exp (interpreter/->jexpr ['x 'y] [:plus [:times 'x 'x] 'y]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;thriving-mountain/exp</span>","value":"#'thriving-mountain/exp"}
@@ -46,43 +46,50 @@
 exp
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.interpreter.Plus@74af1ef3&gt;</span>","value":"#<Plus algebolic.expression.interpreter.Plus@74af1ef3>"}
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.interpreter.Plus@427ac75b&gt;</span>","value":"#<Plus algebolic.expression.interpreter.Plus@427ac75b>"}
 ;; <=
 
 ;; @@
-(.evaluate exp arg)
+(.evaluate exp [3.0 5.0])
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-double'>21.0</span>","value":"21.0"}
+;;; {"type":"html","content":"<span class='clj-double'>14.0</span>","value":"14.0"}
 ;; <=
 
 ;; @@
 (criterium/with-progress-reporting
   (criterium/quick-bench
-    (.evaluate exp arg)
+    (.evaluate exp [3.0 4.0])
     ))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 1538561 iterations
+;;;   compilation occured before 403250 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 58.012153714233975 % of runtime
+;;; WARNING: Final GC required 53.22892582244313 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 52735296 in 6 samples of 8789216 calls.
-;;;              Execution time mean : 9.587289 ns
-;;;     Execution time std-deviation : 0.261130 ns
-;;;    Execution time lower quantile : 9.305447 ns ( 2.5%)
-;;;    Execution time upper quantile : 9.958876 ns (97.5%)
-;;;                    Overhead used : 1.929229 ns
+;;; Evaluation count : 31753578 in 6 samples of 5292263 calls.
+;;;              Execution time mean : 17.583112 ns
+;;;     Execution time std-deviation : 0.406516 ns
+;;;    Execution time lower quantile : 17.021443 ns ( 2.5%)
+;;;    Execution time upper quantile : 18.022315 ns (97.5%)
+;;;                    Overhead used : 2.071901 ns
 ;;; 
 ;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(.indexOf ['x 'y] 'y)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>1</span>","value":"1"}
 ;; <=
 
 ;; @@
