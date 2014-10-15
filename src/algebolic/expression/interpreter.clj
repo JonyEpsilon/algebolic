@@ -44,36 +44,3 @@
   [expr vars coords]
   (let [jexpr ^JExpr (->jexpr vars expr)]
     (Evaluator/evaluateList jexpr coords)))
-
-;(defprotocol Eval
-;  (ev [expr coords]))
-;
-;(defrecord Pl [a1 a2]
-;  Eval
-;  (ev [expr coords] (+ (ev a1 coords) (ev a2 coords))))
-;
-;(defrecord Ti [a1 a2]
-;  Eval
-;  (ev [expr coords] (* (ev a1 coords) (ev a2 coords))))
-;
-;(defrecord Co [c]
-;  Eval
-;  (ev [expr coords] c))
-;
-;(defrecord Va [i]
-;  Eval
-;  (ev [expr coords] (nth coords i)))
-;
-;(defn to-eval
-;  [^APersistentVector var-list expr]
-;  (cond
-;    (symbol? expr) (Va. (.indexOf var-list expr))
-;    (number? expr) (Co. expr)
-;    true (case (nth expr 0)
-;           :plus (Pl. (to-eval var-list (nth expr 1)) (to-eval var-list (nth expr 2)))
-;           :times (Ti. (to-eval var-list (nth expr 1)) (to-eval var-list (nth expr 2))))))
-;
-;(defn evaluate-p
-;  [expr vars coords]
-;  (let [eval-expr (to-eval vars expr)]
-;    (mapv (fn [x] (ev eval-expr x)) coords)))
