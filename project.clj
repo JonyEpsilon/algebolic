@@ -10,4 +10,4 @@
                  [criterium "0.4.3"]]
   :java-source-paths ["java"]
   :plugins [[lein-gorilla "0.3.4-SNAPSHOT"]]
-  :jvm-opts ["-server" "-Xmx4g"])
+  :jvm-opts ^:replace ["-server" "-Xmx4g"])

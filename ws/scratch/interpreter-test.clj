@@ -12,11 +12,13 @@
 
 ;; @@
 (ns balmy-hurricane
-  (:import algebolic.expression.interpreter.Evaluator)
+  (:import algebolic.expression.interpreter.Evaluator
+           algebolic.expression.score.ScoreUtils)
   (:require [gorilla-plot.core :as plot]
             [clojure.walk :as walk]
             [algebolic.expression.core :as expression]
             [algebolic.expression.interpreter :as interpreter]
+            [algebolic.expression.score :as score]
             [criterium.core :as criterium]))
 ;; @@
 ;; =>
@@ -41,14 +43,14 @@
 expr
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"},{"type":"html","content":"<span class='clj-symbol'>y</span>","value":"y"}],"value":"[:plus [:times x x] y]"}
+;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:plus</span>","value":":plus"},{"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:times</span>","value":":times"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:times x x]"},{"type":"html","content":"<span class='clj-symbol'>x</span>","value":"x"}],"value":"[:plus [:times x x] x]"}
 ;; <=
 
 ;; @@
 (time (do (doall (repeatedly 100000 #(interpreter/evaluate expr ['x 'y] [[3.0 4.0]]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 129.553 msecs&quot;
+;;; &quot;Elapsed time: 43.232 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -59,7 +61,7 @@ expr
 (interpreter/evaluate expr ['x 'y] [[3.0 4.0]])
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>[13.0]</span>","value":"[13.0]"}
+;;; {"type":"html","content":"<span class='clj-unkown'>[12.0]</span>","value":"[12.0]"}
 ;; <=
 
 ;; @@
@@ -77,22 +79,22 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 11673 iterations
-;;;   compilation occured before 23344 iterations
+;;;   compilation occured before 11076 iterations
+;;;   compilation occured before 22150 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 51.64736920334471 % of runtime
+;;; WARNING: Final GC required 48.199180826166035 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 35370 in 6 samples of 5895 calls.
-;;;              Execution time mean : 17.260102 µs
-;;;     Execution time std-deviation : 409.100766 ns
-;;;    Execution time lower quantile : 17.002144 µs ( 2.5%)
-;;;    Execution time upper quantile : 17.811601 µs (97.5%)
-;;;                    Overhead used : 1.927622 ns
+;;; Evaluation count : 35682 in 6 samples of 5947 calls.
+;;;              Execution time mean : 17.073475 µs
+;;;     Execution time std-deviation : 231.070069 ns
+;;;    Execution time lower quantile : 16.823517 µs ( 2.5%)
+;;;    Execution time upper quantile : 17.290644 µs (97.5%)
+;;;                    Overhead used : 1.940878 ns
 ;;; 
 ;; <-
 ;; =>
@@ -100,43 +102,48 @@ expr
 ;; <=
 
 ;; @@
-(def expr-p (interpreter/to-eval ['x 'y] expr))
+(def data (mapv (fn [x] [[x] (+ (* 2 x) (* 3 x x))]) (range 0.0 100.0 0.1)))
+(def vars ['x])
+(def coords (mapv first data))
+(def values (mapv second data))
+(def ex [:plus [:times 2.0 'x] [:times 3.0 [:times 'x 'x]]])
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/expr-p</span>","value":"#'balmy-hurricane/expr-p"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/ex</span>","value":"#'balmy-hurricane/ex"}
 ;; <=
 
 ;; @@
-(interpreter/evaluate-p expr ['x 'y] [[3.0 4.0] [4.5 5.6]])
+(score/abs-error vars coords values ex)
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"<span class='clj-vector'>[</span>","close":"<span class='clj-vector'>]</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-double'>13.0</span>","value":"13.0"},{"type":"html","content":"<span class='clj-double'>25.85</span>","value":"25.85"}],"value":"[13.0 25.85]"}
+;;; {"type":"html","content":"<span class='clj-double'>6.720024536832625E-10</span>","value":"6.720024536832625E-10"}
 ;; <=
 
 ;; @@
 (criterium/with-progress-reporting
   (criterium/quick-bench
-    (interpreter/to-eval ['x 'y] expr)
+  (score/abs-error vars coords values ex)
     ))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 275515 iterations
-;;;   compilation occured before 5234191 iterations
+;;;   compilation occured before 2545 iterations
+;;;   compilation occured before 7633 iterations
+;;;   compilation occured before 89041 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 49.257771082160176 % of runtime
+;;; WARNING: Final GC required 50.845711283994646 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 1826166 in 6 samples of 304361 calls.
-;;;              Execution time mean : 330.479731 ns
-;;;     Execution time std-deviation : 6.698466 ns
-;;;    Execution time lower quantile : 324.470967 ns ( 2.5%)
-;;;    Execution time upper quantile : 340.629000 ns (97.5%)
-;;;                    Overhead used : 1.927622 ns
+;;; Evaluation count : 19212 in 6 samples of 3202 calls.
+;;;              Execution time mean : 31.995613 µs
+;;;     Execution time std-deviation : 1.369809 µs
+;;;    Execution time lower quantile : 30.937472 µs ( 2.5%)
+;;;    Execution time upper quantile : 33.693289 µs (97.5%)
+;;;                    Overhead used : 1.940878 ns
 ;;; 
 ;; <-
 ;; =>
@@ -144,41 +151,42 @@ expr
 ;; <=
 
 ;; @@
-(def data (map (fn [x] [[x] (+ (* 2 x) (* 3 x x))]) (range 1000)))
-(def coords (map first data))
+(def fn-vals (interpreter/evaluate ex vars coords))
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/coords</span>","value":"#'balmy-hurricane/coords"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/fn-vals</span>","value":"#'balmy-hurricane/fn-vals"}
+;; <=
+
+;; @@
+(ScoreUtils/chiSquaredAbs values fn-vals)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-double'>6.720024536832625E-10</span>","value":"6.720024536832625E-10"}
 ;; <=
 
 ;; @@
 (criterium/with-progress-reporting
   (criterium/quick-bench
-    (interpreter/evaluate expr ['x] coords)
+  (ScoreUtils/chiSquaredAbs values fn-vals)
     ))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 1 iterations
-;;;   compilation occured before 6212 iterations
+;;;   compilation occured before 47088 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 35.67900860653284 % of runtime
+;;; WARNING: Final GC required 50.691493943451015 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 7788 in 6 samples of 1298 calls.
-;;;              Execution time mean : 78.578838 µs
-;;;     Execution time std-deviation : 1.601522 µs
-;;;    Execution time lower quantile : 77.364790 µs ( 2.5%)
-;;;    Execution time upper quantile : 81.155622 µs (97.5%)
-;;;                    Overhead used : 1.927622 ns
-;;; 
-;;; Found 1 outliers in 6 samples (16.6667 %)
-;;; 	low-severe	 1 (16.6667 %)
-;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+;;; Evaluation count : 92616 in 6 samples of 15436 calls.
+;;;              Execution time mean : 6.714005 µs
+;;;     Execution time std-deviation : 132.081525 ns
+;;;    Execution time lower quantile : 6.571653 µs ( 2.5%)
+;;;    Execution time upper quantile : 6.871480 µs (97.5%)
+;;;                    Overhead used : 1.940878 ns
 ;;; 
 ;; <-
 ;; =>
