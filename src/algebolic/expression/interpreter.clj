@@ -36,7 +36,7 @@
            :plus (Plus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
            :times (Times. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2))))))
 
-(defn evaluate
+(defn evaluate-j
   "Evaluates the given expression at the given coordinates. `vars` is a vector of the variables in the expression, for
    example `['x 'y]`. `coords` is the values of the variables at which to evaluate the expression. It should be in the
    format `[[x1 y1] [x2 y2] ...]`, where the variables are given in the order specified in `vars`. The function returns
@@ -44,3 +44,36 @@
   [expr vars coords]
   (let [jexpr ^JExpr (->jexpr vars expr)]
     (Evaluator/evaluateList jexpr coords)))
+
+(defprotocol Eval
+  (ev [expr coords]))
+
+(defrecord Pl [a1 a2]
+  Eval
+  (ev [expr coords] (+ (ev a1 coords) (ev a2 coords))))
+
+(defrecord Ti [a1 a2]
+  Eval
+  (ev [expr coords] (* (ev a1 coords) (ev a2 coords))))
+
+(defrecord Co [c]
+  Eval
+  (ev [expr coords] c))
+
+(defrecord Va [i]
+  Eval
+  (ev [expr coords] (nth coords i)))
+
+(defn to-eval
+  [^APersistentVector var-list expr]
+  (cond
+    (symbol? expr) (Va. (.indexOf var-list expr))
+    (number? expr) (Co. expr)
+    true (case (nth expr 0)
+           :plus (Pl. (to-eval var-list (nth expr 1)) (to-eval var-list (nth expr 2)))
+           :times (Ti. (to-eval var-list (nth expr 1)) (to-eval var-list (nth expr 2))))))
+
+(defn evaluate
+  [expr vars coords]
+  (let [eval-expr (to-eval vars expr)]
+    (mapv (fn [x] (ev eval-expr x)) coords)))
