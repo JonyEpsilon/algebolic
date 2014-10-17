@@ -21,7 +21,7 @@
 ;; * Functions and terminals *
 
 ;; When you change the function set you have to make corresponding changes to a number of things:
-;; - the interpreter (interpreter.clj and the Java code in `algebolic.expression.interpreter`)
+;; - the interpreter (interpreter.clj and the Java code in `algebolic.expression`)
 ;; - the Mathematica export code (mma.clj)
 ;; - the LaTex export code (render.clj)
 (def ^:private function-set

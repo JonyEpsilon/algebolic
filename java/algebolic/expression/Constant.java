@@ -17,9 +17,4 @@ public class Constant extends NullaryExpr {
     public double evaluate(List<Double> vars) {
         return c;
     }
-
-    @Override
-    public JExpr copy() {
-        return new Constant(c);
-    }
 }

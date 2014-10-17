@@ -6,15 +6,14 @@ package algebolic.expression;
 
 import java.util.List;
 
-public class Times extends BinaryExpr {
+public class Minus extends BinaryExpr {
 
-    public Times(JExpr arg1, JExpr arg2) {
+    public Minus(JExpr arg1, JExpr arg2) {
         super(arg1, arg2);
     }
 
     @Override
     public double evaluate(List<Double> vars) {
-        return arg1.evaluate(vars) * arg2.evaluate(vars);
+        return arg1.evaluate(vars) - arg1.evaluate(vars);
     }
-
 }

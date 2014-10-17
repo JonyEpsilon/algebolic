@@ -17,9 +17,4 @@ public class Plus extends BinaryExpr {
        return arg1.evaluate(vars) + arg2.evaluate(vars);
     }
 
-    @Override
-    public JExpr copy() {
-        return new Plus(arg1.copy(), arg2.copy());
-    }
-
 }

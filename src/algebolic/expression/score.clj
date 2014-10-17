@@ -4,7 +4,7 @@
 
 (ns algebolic.expression.score
   "Score functions for algebolic expressions."
-  (:import (algebolic.expression.score Scores))
+  (:import (algebolic.expression Scores))
   (:require [algebolic.expression.core :as expression]
             [algebolic.expression.tree :as tree]
             [algebolic.expression.interpreter :as interpreter]))

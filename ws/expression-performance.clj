@@ -8,6 +8,7 @@
 
 ;; @@
 (ns algebolic.expression-performance
+  (:import [algebolic.expression JExpr])
   (:require [gorilla-plot.core :as plot]
             [algebolic.expression.core :as expression]
             [algebolic.expression.interpreter :as interpreter]
@@ -44,21 +45,21 @@
 (interpreter/->jexpr vars expr)
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.Plus@23309b91&gt;</span>","value":"#<Plus algebolic.expression.Plus@23309b91>"}
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.Plus@7481081e&gt;</span>","value":"#<Plus algebolic.expression.Plus@7481081e>"}
 ;; <=
 
 ;; @@
 (criterium/quick-bench (interpreter/->jexpr vars expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 3.416252335135401 % of runtime
-;;; WARNING: Final GC required 30.251490409864978 % of runtime
-;;; Evaluation count : 1887402 in 6 samples of 314567 calls.
-;;;              Execution time mean : 322.830687 ns
-;;;     Execution time std-deviation : 9.692559 ns
-;;;    Execution time lower quantile : 312.932018 ns ( 2.5%)
-;;;    Execution time upper quantile : 335.803586 ns (97.5%)
-;;;                    Overhead used : 1.972235 ns
+;;; WARNING: Final GC required 3.5736833234076304 % of runtime
+;;; WARNING: Final GC required 31.51922720081532 % of runtime
+;;; Evaluation count : 1833090 in 6 samples of 305515 calls.
+;;;              Execution time mean : 328.962436 ns
+;;;     Execution time std-deviation : 9.442710 ns
+;;;    Execution time lower quantile : 316.234381 ns ( 2.5%)
+;;;    Execution time upper quantile : 339.247014 ns (97.5%)
+;;;                    Overhead used : 1.928557 ns
 ;;; 
 ;; <-
 ;; =>
@@ -76,13 +77,13 @@
 (criterium/quick-bench (interpreter/evaluate expr vars coords))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 28.488310526923076 % of runtime
-;;; Evaluation count : 25680 in 6 samples of 4280 calls.
-;;;              Execution time mean : 25.110045 µs
-;;;     Execution time std-deviation : 532.862647 ns
-;;;    Execution time lower quantile : 24.669555 µs ( 2.5%)
-;;;    Execution time upper quantile : 25.840506 µs (97.5%)
-;;;                    Overhead used : 1.972235 ns
+;;; WARNING: Final GC required 30.80141146799403 % of runtime
+;;; Evaluation count : 25458 in 6 samples of 4243 calls.
+;;;              Execution time mean : 25.347910 µs
+;;;     Execution time std-deviation : 698.486221 ns
+;;;    Execution time lower quantile : 24.275493 µs ( 2.5%)
+;;;    Execution time upper quantile : 26.076648 µs (97.5%)
+;;;                    Overhead used : 1.928557 ns
 ;;; 
 ;; <-
 ;; =>
@@ -104,13 +105,17 @@
 (criterium/quick-bench (score/abs-error vars coords data expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 31.400354618546128 % of runtime
-;;; Evaluation count : 18918 in 6 samples of 3153 calls.
-;;;              Execution time mean : 32.445631 µs
-;;;     Execution time std-deviation : 1.150861 µs
-;;;    Execution time lower quantile : 31.041685 µs ( 2.5%)
-;;;    Execution time upper quantile : 33.850751 µs (97.5%)
-;;;                    Overhead used : 1.972235 ns
+;;; WARNING: Final GC required 31.79588711321808 % of runtime
+;;; Evaluation count : 19278 in 6 samples of 3213 calls.
+;;;              Execution time mean : 32.052864 µs
+;;;     Execution time std-deviation : 326.871096 ns
+;;;    Execution time lower quantile : 31.512308 µs ( 2.5%)
+;;;    Execution time upper quantile : 32.442756 µs (97.5%)
+;;;                    Overhead used : 1.928557 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
 ;;; 
 ;; <-
 ;; =>
@@ -132,13 +137,13 @@
 (criterium/quick-bench (tree/count-nodes expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 31.31762482441068 % of runtime
-;;; Evaluation count : 3191796 in 6 samples of 531966 calls.
-;;;              Execution time mean : 189.459771 ns
-;;;     Execution time std-deviation : 6.784055 ns
-;;;    Execution time lower quantile : 181.562299 ns ( 2.5%)
-;;;    Execution time upper quantile : 198.333607 ns (97.5%)
-;;;                    Overhead used : 1.972235 ns
+;;; WARNING: Final GC required 32.136136775203724 % of runtime
+;;; Evaluation count : 2912904 in 6 samples of 485484 calls.
+;;;              Execution time mean : 216.050033 ns
+;;;     Execution time std-deviation : 4.095084 ns
+;;;    Execution time lower quantile : 211.434068 ns ( 2.5%)
+;;;    Execution time upper quantile : 219.914967 ns (97.5%)
+;;;                    Overhead used : 1.928557 ns
 ;;; 
 ;; <-
 ;; =>
@@ -160,13 +165,13 @@
 (criterium/quick-bench (tree/sub-tree expr 7))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 32.65232859398886 % of runtime
-;;; Evaluation count : 59220 in 6 samples of 9870 calls.
-;;;              Execution time mean : 10.236508 µs
-;;;     Execution time std-deviation : 193.307737 ns
-;;;    Execution time lower quantile : 9.985481 µs ( 2.5%)
-;;;    Execution time upper quantile : 10.445609 µs (97.5%)
-;;;                    Overhead used : 2.037987 ns
+;;; WARNING: Final GC required 32.84345894065332 % of runtime
+;;; Evaluation count : 55704 in 6 samples of 9284 calls.
+;;;              Execution time mean : 10.384139 µs
+;;;     Execution time std-deviation : 234.473992 ns
+;;;    Execution time lower quantile : 10.051326 µs ( 2.5%)
+;;;    Execution time upper quantile : 10.649675 µs (97.5%)
+;;;                    Overhead used : 1.928557 ns
 ;;; 
 ;; <-
 ;; =>
@@ -177,13 +182,13 @@
 (criterium/quick-bench (tree/tree-replace expr 7 expr2))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 31.452069202766346 % of runtime
-;;; Evaluation count : 44496 in 6 samples of 7416 calls.
-;;;              Execution time mean : 13.942916 µs
-;;;     Execution time std-deviation : 292.332570 ns
-;;;    Execution time lower quantile : 13.610102 µs ( 2.5%)
-;;;    Execution time upper quantile : 14.226000 µs (97.5%)
-;;;                    Overhead used : 2.037987 ns
+;;; WARNING: Final GC required 29.99938720435366 % of runtime
+;;; Evaluation count : 46158 in 6 samples of 7693 calls.
+;;;              Execution time mean : 13.687970 µs
+;;;     Execution time std-deviation : 517.508157 ns
+;;;    Execution time lower quantile : 13.056860 µs ( 2.5%)
+;;;    Execution time upper quantile : 14.371536 µs (97.5%)
+;;;                    Overhead used : 1.928557 ns
 ;;; 
 ;; <-
 ;; =>
@@ -194,13 +199,17 @@
 (criterium/quick-bench (tree/random-terminal-index expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 31.959488819573288 % of runtime
-;;; Evaluation count : 55278 in 6 samples of 9213 calls.
-;;;              Execution time mean : 11.356485 µs
-;;;     Execution time std-deviation : 365.443406 ns
-;;;    Execution time lower quantile : 11.042904 µs ( 2.5%)
-;;;    Execution time upper quantile : 11.879122 µs (97.5%)
-;;;                    Overhead used : 2.037987 ns
+;;; WARNING: Final GC required 35.109801929642494 % of runtime
+;;; Evaluation count : 50982 in 6 samples of 8497 calls.
+;;;              Execution time mean : 11.785890 µs
+;;;     Execution time std-deviation : 711.510727 ns
+;;;    Execution time lower quantile : 10.996235 µs ( 2.5%)
+;;;    Execution time upper quantile : 12.784539 µs (97.5%)
+;;;                    Overhead used : 1.928557 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 14.6818 % Variance is moderately inflated by outliers
 ;;; 
 ;; <-
 ;; =>
@@ -211,17 +220,13 @@
 (criterium/quick-bench (tree/random-nonterminal-index expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 31.65995660950157 % of runtime
-;;; Evaluation count : 44622 in 6 samples of 7437 calls.
-;;;              Execution time mean : 13.659610 µs
-;;;     Execution time std-deviation : 421.850223 ns
-;;;    Execution time lower quantile : 13.189812 µs ( 2.5%)
-;;;    Execution time upper quantile : 14.265738 µs (97.5%)
-;;;                    Overhead used : 2.037987 ns
-;;; 
-;;; Found 1 outliers in 6 samples (16.6667 %)
-;;; 	low-severe	 1 (16.6667 %)
-;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+;;; WARNING: Final GC required 29.73244068421747 % of runtime
+;;; Evaluation count : 45402 in 6 samples of 7567 calls.
+;;;              Execution time mean : 14.443179 µs
+;;;     Execution time std-deviation : 586.384302 ns
+;;;    Execution time lower quantile : 13.767770 µs ( 2.5%)
+;;;    Execution time upper quantile : 15.066244 µs (97.5%)
+;;;                    Overhead used : 1.928557 ns
 ;;; 
 ;; <-
 ;; =>

@@ -13,7 +13,7 @@
 ;; @@
 (ns balmy-hurricane
   (:import algebolic.expression.interpreter.Evaluator
-           algebolic.expression.score.Scores)
+           algebolic.expression.Scores)
   (:require [gorilla-plot.core :as plot]
             [clojure.walk :as walk]
             [algebolic.expression.core :as expression]

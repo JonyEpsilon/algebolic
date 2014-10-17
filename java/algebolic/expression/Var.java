@@ -20,9 +20,4 @@ public class Var extends NullaryExpr {
         return vars.get(index);
     }
 
-    @Override
-    public JExpr copy() {
-        return new Var(index);
-    }
-
 }
