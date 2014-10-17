@@ -12,7 +12,7 @@
 
 ;; @@
 (ns thriving-mountain
-  (:import [algebolic.expression.interpreter Plus Times Var Constant JExpr])
+  (:import [algebolic.expression.interpreter Plus Times Var Constant Evaluatable])
   (:require [gorilla-plot.core :as plot]
             [algebolic.expression.interpreter :as interpreter]
             [criterium.core :as criterium]))
@@ -46,7 +46,7 @@
 exp
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.interpreter.Plus@427ac75b&gt;</span>","value":"#<Plus algebolic.expression.interpreter.Plus@427ac75b>"}
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.Plus@427ac75b&gt;</span>","value":"#<Plus algebolic.expression.Plus@427ac75b>"}
 ;; <=
 
 ;; @@

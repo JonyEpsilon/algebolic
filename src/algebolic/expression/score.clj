@@ -4,7 +4,7 @@
 
 (ns algebolic.expression.score
   "Score functions for algebolic expressions."
-  (:import (algebolic.expression.score ScoreUtils))
+  (:import (algebolic.expression.score Scores))
   (:require [algebolic.expression.core :as expression]
             [algebolic.expression.tree :as tree]
             [algebolic.expression.interpreter :as interpreter]))
@@ -13,7 +13,7 @@
   "Calculates the summed abs error between the expression, evaluated at the coordinates, and the data."
   [vars coords data expr]
   (let [expr-vals (interpreter/evaluate expr vars coords)]
-    (ScoreUtils/chiSquaredAbs expr-vals data)))
+    (Scores/chiSquaredAbs expr-vals data)))
 
 (defn abs-error-pp
   "An error with linear parsimony pressure. The same as `abs-error` but applies a penalty to the score

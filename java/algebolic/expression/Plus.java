@@ -2,20 +2,24 @@
 //
 // Not for distribution.
 
-package algebolic.expression.interpreter;
+package algebolic.expression;
 
 import java.util.List;
 
-public class Plus implements JExpr {
-    private JExpr arg1;
-    private JExpr arg2;
+public class Plus extends BinaryExpr {
 
     public Plus(JExpr arg1, JExpr arg2) {
-        this.arg1 = arg1;
-        this.arg2 = arg2;
+        super(arg1, arg2);
     }
 
+    @Override
     public double evaluate(List<Double> vars) {
        return arg1.evaluate(vars) + arg2.evaluate(vars);
     }
+
+    @Override
+    public JExpr copy() {
+        return new Plus(arg1.copy(), arg2.copy());
+    }
+
 }

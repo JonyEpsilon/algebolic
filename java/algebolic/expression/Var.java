@@ -2,19 +2,27 @@
 //
 // Not for distribution.
 
-package algebolic.expression.interpreter;
+package algebolic.expression;
+
 
 import java.util.List;
 
-public class Var implements JExpr {
+public class Var extends NullaryExpr {
 
-    private int index;
+    private final int index;
 
     public Var(int index) {
         this.index = index;
     }
 
+    @Override
     public double evaluate(List<Double> vars) {
         return vars.get(index);
     }
+
+    @Override
+    public JExpr copy() {
+        return new Var(index);
+    }
+
 }

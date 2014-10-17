@@ -18,7 +18,8 @@
   significant. The closest I was able to get to the Java performace was using a protocol and type approach,
   but it was still a (small) few times slower. I suspect this was down to primitive type boxing/unboxing on
   the function calls, but I'm not sure, as that is typically very fast on the JVM."
-  (:import [algebolic.expression.interpreter Plus Times Var Constant JExpr Evaluator]
+  (:import [algebolic.expression Plus Times Var Constant JExpr]
+           [algebolic.expression.score Scores]
            (clojure.lang APersistentVector))
   (:require [algebolic.expression.core :as expression]))
 
@@ -43,4 +44,4 @@
    a vector of the expression values `[v1 v2 v3]`."
   [expr vars coords]
   (let [jexpr ^JExpr (->jexpr vars expr)]
-    (Evaluator/evaluateList jexpr coords)))
+    (Scores/evaluateList jexpr coords)))

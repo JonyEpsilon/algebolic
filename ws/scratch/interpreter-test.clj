@@ -13,7 +13,7 @@
 ;; @@
 (ns balmy-hurricane
   (:import algebolic.expression.interpreter.Evaluator
-           algebolic.expression.score.ScoreUtils)
+           algebolic.expression.score.Scores)
   (:require [gorilla-plot.core :as plot]
             [clojure.walk :as walk]
             [algebolic.expression.core :as expression]
@@ -50,7 +50,7 @@ expr
 (time (do (doall (repeatedly 100000 #(interpreter/evaluate expr ['x 'y] [[3.0 4.0]]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 43.232 msecs&quot;
+;;; &quot;Elapsed time: 55.424 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -116,7 +116,7 @@ expr
 (score/abs-error vars coords values ex)
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-double'>4639.759059650429</span>","value":"4639.759059650429"}
+;;; {"type":"html","content":"<span class='clj-double'>6.720024536832625E-10</span>","value":"6.720024536832625E-10"}
 ;; <=
 
 ;; @@
@@ -185,6 +185,40 @@ expr
 ;;;    Execution time lower quantile : 6.571653 µs ( 2.5%)
 ;;;    Execution time upper quantile : 6.871480 µs (97.5%)
 ;;;                    Overhead used : 1.940878 ns
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(criterium/with-progress-reporting
+  (criterium/quick-bench
+  (coerce :vectorz values)
+    ))
+;; @@
+;; ->
+;;; Warming up for JIT optimisations 5000000000 ...
+;;;   compilation occured before 6994 iterations
+;;; Estimating execution count ...
+;;; Sampling ...
+;;; Final GC...
+;;; Checking GC...
+;;; WARNING: Final GC required 54.49491729022809 % of runtime
+;;; Finding outliers ...
+;;; Bootstrapping ...
+;;; Checking outlier significance
+;;; Evaluation count : 8406 in 6 samples of 1401 calls.
+;;;              Execution time mean : 73.157849 µs
+;;;     Execution time std-deviation : 962.240133 ns
+;;;    Execution time lower quantile : 71.651068 µs ( 2.5%)
+;;;    Execution time upper quantile : 74.173998 µs (97.5%)
+;;;                    Overhead used : 2.037307 ns
+;;; 
+;;; Found 2 outliers in 6 samples (33.3333 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;; 	low-mild	 1 (16.6667 %)
+;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
 ;;; 
 ;; <-
 ;; =>

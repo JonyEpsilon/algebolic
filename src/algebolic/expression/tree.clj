@@ -10,12 +10,27 @@
   (:require [algebolic.expression.core :as expression]
             [clojure.zip :as zip]))
 
+;(defn count-nodes-slow
+;  "Count the number of nodes in a tree, including both the function symbols and terminals."
+;  [ex]
+;  (if (expression/non-terminal? ex)
+;    (+ 1 (apply + (map count-nodes-slow (rest ex))))
+;    1))
+
+;; TODO: use arity, rather than explicitly listing all function symbols
 (defn count-nodes
   "Count the number of nodes in a tree, including both the function symbols and terminals."
-  [ex]
-  (if (expression/non-terminal? ex)
-    (+ 1 (apply + (map count-nodes (rest ex))))
-    1))
+  [expr]
+  (cond
+    (symbol? expr) 1
+    (number? expr) 1
+    true (case (nth expr 0)
+           :plus (+ 1 (count-nodes (nth expr 1)) (count-nodes (nth expr 2)))
+           :minus (+ 1 (count-nodes (nth expr 1)) (count-nodes (nth expr 2)))
+           :times (+ 1 (count-nodes (nth expr 1)) (count-nodes (nth expr 2)))
+           :div (+ 1 (count-nodes (nth expr 1)) (count-nodes (nth expr 2)))
+           :sin (+ 1 (count-nodes (nth expr 1)))
+           :cos (+ 1 (count-nodes (nth expr 1))))))
 
 (defn expr-zip
   "We define a zipper constructor for manipulating expression trees. Differs from the ordinary
