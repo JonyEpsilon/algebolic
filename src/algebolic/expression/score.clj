@@ -10,7 +10,9 @@
             [algebolic.expression.interpreter :as interpreter]))
 
 (defn abs-error
-  "Calculates the summed abs error between the expression, evaluated at the coordinates, and the data."
+  "Calculates the summed abs error between the expression, evaluated at the coordinates, and the data. The vars are
+  a list of symbols that represent the coordinates in the expression, in the order that they appear in the coords
+  input."
   [vars coords data expr]
   (let [expr-vals (interpreter/evaluate expr vars coords)]
     (Scores/chiSquaredAbs expr-vals data)))

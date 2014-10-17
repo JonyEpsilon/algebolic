@@ -6,6 +6,8 @@ package algebolic.expression;
 
 import java.util.List;
 
+/* Helper functions for scoring. These are performance critical, so implemented in Java. They are wrapped by the
+ * Clojure functions in `algebolic.expression.interpreter`. */
 public class Scores {
 
     public static double chiSquaredAbs(List<Double> a, List<Double> b) {

@@ -10,12 +10,6 @@
   (:require [algebolic.expression.core :as expression]
             [clojure.zip :as zip]))
 
-;(defn count-nodes-slow
-;  "Count the number of nodes in a tree, including both the function symbols and terminals."
-;  [ex]
-;  (if (expression/non-terminal? ex)
-;    (+ 1 (apply + (map count-nodes-slow (rest ex))))
-;    1))
 
 ;; TODO: use arity, rather than explicitly listing all function symbols
 (defn count-nodes
