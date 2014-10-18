@@ -14,6 +14,6 @@ public class Minus extends BinaryExpr {
 
     @Override
     public double evaluate(List<Double> vars) {
-        return arg1.evaluate(vars) - arg1.evaluate(vars);
+        return arg1.evaluate(vars) - arg2.evaluate(vars);
     }
 }

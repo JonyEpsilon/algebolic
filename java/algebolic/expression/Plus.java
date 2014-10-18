@@ -14,7 +14,7 @@ public class Plus extends BinaryExpr {
 
     @Override
     public double evaluate(List<Double> vars) {
-       return arg1.evaluate(vars) + arg2.evaluate(vars);
+        return arg1.evaluate(vars) + arg2.evaluate(vars);
     }
 
 }
