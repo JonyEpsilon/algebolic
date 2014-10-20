@@ -6,17 +6,14 @@ package algebolic.expression;
 
 import java.util.List;
 
-public class Var extends NullaryExpr {
+public class Cos extends UnaryExpression {
 
-    private final int index;
-
-    public Var(int index) {
-        this.index = index;
+    public Cos(JExpr arg1) {
+        super(arg1);
     }
 
     @Override
     public double evaluate(List<Double> vars) {
-        return vars.get(index);
+        return Math.cos(arg1.evaluate(vars));
     }
-
 }

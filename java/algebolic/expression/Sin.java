@@ -6,17 +6,14 @@ package algebolic.expression;
 
 import java.util.List;
 
-public class Var extends NullaryExpr {
+public class Sin extends UnaryExpression {
 
-    private final int index;
-
-    public Var(int index) {
-        this.index = index;
+    public Sin(JExpr arg1) {
+        super(arg1);
     }
 
     @Override
     public double evaluate(List<Double> vars) {
-        return vars.get(index);
+        return Math.sin(arg1.evaluate(vars));
     }
-
 }

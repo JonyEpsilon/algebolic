@@ -18,7 +18,7 @@
   significant. The closest I was able to get to the Java performace was using a protocol and type approach,
   but it was still a (small) few times slower. I suspect this was down to primitive type boxing/unboxing on
   the function calls, but I'm not sure, as that is typically very fast on the JVM."
-  (:import [algebolic.expression Plus Times Var Constant JExpr Minus]
+  (:import [algebolic.expression Plus Times Var Constant JExpr Minus Cos Sin Divide]
            (clojure.lang APersistentVector))
   (:require [algebolic.expression.core :as expression]))
 
@@ -36,6 +36,9 @@
            :plus (Plus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
            :minus (Minus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
            :times (Times. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
+           :div (Divide. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
+           :sin (Sin. (->jexpr var-list (nth expr 1)))
+           :cos (Cos. (->jexpr var-list (nth expr 1)))
            )))
 
 (defn ^Double evaluate
