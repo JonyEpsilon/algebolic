@@ -4,6 +4,8 @@
 
 package algebolic.expression;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Constant extends NullaryExpr {
@@ -16,5 +18,10 @@ public class Constant extends NullaryExpr {
     @Override
     public double evaluate(List<Double> vars) {
         return c;
+    }
+
+    @Override
+    public List<Double> evaluateD(List<Double> vars) {
+        return new ArrayList<Double>(Collections.nCopies(vars.size(), 0.0));
     }
 }

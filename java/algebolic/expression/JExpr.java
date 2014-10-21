@@ -13,6 +13,9 @@ public abstract class JExpr {
     /* Evaluate the expression for the given variable values. */
     public abstract double evaluate(List<Double> vars);
 
+    /* Evaluate the expression for the given variable values. */
+    public abstract List<Double> evaluateD(List<Double> vars);
+
     /* The number of nodes this expression has. Currently unused. */
     public abstract int size();
 
@@ -25,4 +28,12 @@ public abstract class JExpr {
         return result;
     }
 
+    /* Evaluate the value of a JExpr at a set of coordinates. The coordinates are given as a nested list of Doubles. */
+    public List<List<Double>> evaluateDList(List<List<Double>> coords) {
+        List<List<Double>> result = new ArrayList<List<Double>>(coords.size());
+        for (List<Double> c : coords) {
+            result.add(this.evaluateD(c));
+        }
+        return result;
+    }
 }

@@ -49,3 +49,8 @@
   [expr vars coords]
   (let [jexpr ^JExpr (->jexpr vars expr)]
     (.evaluateList jexpr coords)))
+
+(defn evaluate-d
+  [expr vars coords]
+  (let [jexpr ^JExpr (->jexpr vars expr)]
+    (.evaluateDList jexpr coords)))
