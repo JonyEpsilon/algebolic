@@ -5,6 +5,7 @@
 package algebolic.expression;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /* Internal representation of an algebolic expression for the Java interpreter. */
@@ -14,7 +15,7 @@ public abstract class JExpr {
     public abstract double evaluate(List<Double> vars);
 
     /* Evaluate the expression for the given variable values. */
-    public abstract List<Double> evaluateD(List<Double> vars);
+    public abstract double[] evaluateD(List<Double> vars);
 
     /* The number of nodes this expression has. Currently unused. */
     public abstract int size();
@@ -34,7 +35,12 @@ public abstract class JExpr {
     public List<List<Double>> evaluateDList(List<List<Double>> coords) {
         List<List<Double>> result = new ArrayList<List<Double>>(coords.size());
         for (List<Double> c : coords) {
-            result.add(this.evaluateD(c));
+            // We compute the value and derivatives using double[] for efficiency, but here we pack the results into
+            // ArrayLists for smoother interop with Clojure.
+            double [] vals = evaluateD(c);
+            List<Double> dat = new ArrayList<Double>(vals.length);
+            for (double v : vals) dat.add(v);
+            result.add(dat);
         }
         return result;
     }

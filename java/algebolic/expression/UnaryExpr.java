@@ -4,11 +4,11 @@
 
 package algebolic.expression;
 
-public abstract class UnaryExpression extends JExpr {
+public abstract class UnaryExpr extends JExpr {
 
     protected final JExpr arg1;
 
-    protected UnaryExpression(JExpr arg1) {
+    protected UnaryExpr(JExpr arg1) {
         this.arg1 = arg1;
     }
 

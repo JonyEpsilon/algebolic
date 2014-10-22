@@ -4,10 +4,9 @@
 
 package algebolic.expression;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Sin extends UnaryExpression {
+public class Sin extends UnaryExpr {
 
     public Sin(JExpr arg1) {
         super(arg1);
@@ -19,18 +18,18 @@ public class Sin extends UnaryExpression {
     }
 
     @Override
-    public List<Double> evaluateD(List<Double> vars) {
+    public double[] evaluateD(List<Double> vars) {
         int n = vars.size();
-        List<Double> res = new ArrayList<Double>(n + 1);
+        double[] res = new double[n + 1];
 
-        List<Double> a1v = arg1.evaluateD(vars);
+        double[] a1v = arg1.evaluateD(vars);
 
-        res.add(0, Math.sin(a1v.get(0)));
+        res[0] = Math.sin(a1v[0]);
 
         // Calculate the derivative using the chain rule.
-        double c = Math.cos(a1v.get(0));
+        double c = Math.cos(a1v[0]);
         for (int i = 0; i < n; i++) {
-            res.add(i + 1, a1v.get(i + 1) * c);
+            res[i + 1] = a1v[i + 1] * c;
         }
         return res;
     }

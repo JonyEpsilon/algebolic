@@ -4,7 +4,6 @@
 
 package algebolic.expression;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Divide extends BinaryExpr {
@@ -21,25 +20,23 @@ public class Divide extends BinaryExpr {
     }
 
     @Override
-    public List<Double> evaluateD(List<Double> vars) {
+    public double[] evaluateD(List<Double> vars) {
         int n = vars.size();
-        List<Double> res = new ArrayList<Double>(n + 1);
+        double[] res = new double[n + 1];
 
         // we check the denominator first. If it is zero, we extend the approach of Koza's protected division, and
         // return a value of 1.0, with all derivatives equal to zero. This is equivalent to returning a constant value
         // of 1.0.
-        List<Double> a2v = arg2.evaluateD(vars);
-        if (a2v.get(0) == 0.0) return new Constant(1.0).evaluateD(vars);
+        double[] a2v = arg2.evaluateD(vars);
+        if (a2v[0] == 0.0) return new Constant(1.0).evaluateD(vars);
         // not dividing by zero, so press on with calculating the derivatives
-        List<Double> a1v = arg1.evaluateD(vars);
+        double[] a1v = arg1.evaluateD(vars);
 
-        res.add(0, a1v.get(0) / a2v.get(0));
+        res[0] = a1v[0] / a2v[0];
 
         // Quotient rule for each variable.
         for (int i = 0; i < n; i++) {
-            res.add(i + 1,
-                    ((a1v.get(i + 1) * a2v.get(0)) - (a1v.get(0) * a2v.get(i + 1)) / (a2v.get(0) * a2v.get(0)))
-                    );
+            res[i + 1] = ((a1v[i + 1] * a2v[0]) - (a1v[0] * a2v[i + 1]) / (a2v[0] * a2v[0]));
         }
         return res;
     }

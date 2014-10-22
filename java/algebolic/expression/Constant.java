@@ -4,8 +4,6 @@
 
 package algebolic.expression;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Constant extends NullaryExpr {
@@ -21,15 +19,15 @@ public class Constant extends NullaryExpr {
     }
 
     @Override
-    public List<Double> evaluateD(List<Double> vars) {
+    public double[] evaluateD(List<Double> vars) {
         int n = vars.size();
-        List<Double> res = new ArrayList<Double>(n + 1);
+        double[] res = new double[n + 1];
 
-        res.add(0, c);
+        res[0] = c;
 
         // The derivative of a constant is zero with respect to any variable.
         for (int i = 0; i < n; i++) {
-            res.add(i + 1, 0.0);
+            res[i + 1] = 0.0;
         }
         return res;
     }
