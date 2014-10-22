@@ -22,6 +22,15 @@ public class Constant extends NullaryExpr {
 
     @Override
     public List<Double> evaluateD(List<Double> vars) {
-        return new ArrayList<Double>(Collections.nCopies(vars.size(), 0.0));
+        int n = vars.size();
+        List<Double> res = new ArrayList<Double>(n + 1);
+
+        res.add(0, c);
+
+        // The derivative of a constant is zero with respect to any variable.
+        for (int i = 0; i < n; i++) {
+            res.add(i + 1, 0.0);
+        }
+        return res;
     }
 }

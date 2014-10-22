@@ -12,8 +12,7 @@
 
 ;; @@
 (ns balmy-hurricane
-  (:import algebolic.expression.interpreter.Evaluator
-           algebolic.expression.Scores)
+  (:import algebolic.expression.Scores)
   (:require [gorilla-plot.core :as plot]
             [clojure.walk :as walk]
             [algebolic.expression.core :as expression]
@@ -50,7 +49,7 @@ expr
 (time (do (doall (repeatedly 100000 #(interpreter/evaluate expr ['x 'y] [[3.0 4.0]]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 55.424 msecs&quot;
+;;; &quot;Elapsed time: 119.027967 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -79,22 +78,23 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 11076 iterations
-;;;   compilation occured before 22150 iterations
+;;;   compilation occured before 10787 iterations
+;;;   compilation occured before 21572 iterations
+;;;   compilation occured before 32357 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 48.199180826166035 % of runtime
+;;; WARNING: Final GC required 52.892391973558226 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 35682 in 6 samples of 5947 calls.
-;;;              Execution time mean : 17.073475 µs
-;;;     Execution time std-deviation : 231.070069 ns
-;;;    Execution time lower quantile : 16.823517 µs ( 2.5%)
-;;;    Execution time upper quantile : 17.290644 µs (97.5%)
-;;;                    Overhead used : 1.940878 ns
+;;; Evaluation count : 31992 in 6 samples of 5332 calls.
+;;;              Execution time mean : 19.138155 µs
+;;;     Execution time std-deviation : 1.004002 µs
+;;;    Execution time lower quantile : 17.330663 µs ( 2.5%)
+;;;    Execution time upper quantile : 19.930432 µs (97.5%)
+;;;                    Overhead used : 2.024879 ns
 ;;; 
 ;; <-
 ;; =>
@@ -127,21 +127,26 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 6491 iterations
+;;;   compilation occured before 1 iterations
+;;;   compilation occured before 1610 iterations
+;;;   compilation occured before 3219 iterations
+;;;   compilation occured before 6437 iterations
+;;;   compilation occured before 40226 iterations
+;;;   compilation occured before 127112 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 33.107417058173 % of runtime
+;;; WARNING: Final GC required 48.66595046386299 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 936 in 6 samples of 156 calls.
-;;;              Execution time mean : 633.054688 µs
-;;;     Execution time std-deviation : 9.701450 µs
-;;;    Execution time lower quantile : 620.100628 µs ( 2.5%)
-;;;    Execution time upper quantile : 640.743256 µs (97.5%)
-;;;                    Overhead used : 1.940878 ns
+;;; Evaluation count : 17862 in 6 samples of 2977 calls.
+;;;              Execution time mean : 35.263858 µs
+;;;     Execution time std-deviation : 1.437114 µs
+;;;    Execution time lower quantile : 33.180569 µs ( 2.5%)
+;;;    Execution time upper quantile : 36.796642 µs (97.5%)
+;;;                    Overhead used : 2.024879 ns
 ;;; 
 ;; <-
 ;; =>
@@ -156,7 +161,7 @@ expr
 ;; <=
 
 ;; @@
-(ScoreUtils/chiSquaredAbs values fn-vals)
+(Scores/chiSquaredAbs values fn-vals)
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-double'>6.720024536832625E-10</span>","value":"6.720024536832625E-10"}
@@ -165,26 +170,32 @@ expr
 ;; @@
 (criterium/with-progress-reporting
   (criterium/quick-bench
-  (ScoreUtils/chiSquaredAbs values fn-vals)
+  (Scores/chiSquaredAbs values fn-vals)
     ))
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 47088 iterations
+;;;   compilation occured before 2294 iterations
+;;;   compilation occured before 4587 iterations
+;;;   compilation occured before 6880 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 50.691493943451015 % of runtime
+;;; WARNING: Final GC required 34.47200384048192 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 92616 in 6 samples of 15436 calls.
-;;;              Execution time mean : 6.714005 µs
-;;;     Execution time std-deviation : 132.081525 ns
-;;;    Execution time lower quantile : 6.571653 µs ( 2.5%)
-;;;    Execution time upper quantile : 6.871480 µs (97.5%)
-;;;                    Overhead used : 1.940878 ns
+;;; Evaluation count : 84342 in 6 samples of 14057 calls.
+;;;              Execution time mean : 7.053405 µs
+;;;     Execution time std-deviation : 264.049391 ns
+;;;    Execution time lower quantile : 6.818311 µs ( 2.5%)
+;;;    Execution time upper quantile : 7.485936 µs (97.5%)
+;;;                    Overhead used : 2.024879 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
 ;;; 
 ;; <-
 ;; =>
@@ -192,38 +203,19 @@ expr
 ;; <=
 
 ;; @@
-(criterium/with-progress-reporting
-  (criterium/quick-bench
-  (coerce :vectorz values)
-    ))
+(def e (interpreter/->jexpr vars 1.0))
 ;; @@
-;; ->
-;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 6994 iterations
-;;; Estimating execution count ...
-;;; Sampling ...
-;;; Final GC...
-;;; Checking GC...
-;;; WARNING: Final GC required 54.49491729022809 % of runtime
-;;; Finding outliers ...
-;;; Bootstrapping ...
-;;; Checking outlier significance
-;;; Evaluation count : 8406 in 6 samples of 1401 calls.
-;;;              Execution time mean : 73.157849 µs
-;;;     Execution time std-deviation : 962.240133 ns
-;;;    Execution time lower quantile : 71.651068 µs ( 2.5%)
-;;;    Execution time upper quantile : 74.173998 µs (97.5%)
-;;;                    Overhead used : 2.037307 ns
-;;; 
-;;; Found 2 outliers in 6 samples (33.3333 %)
-;;; 	low-severe	 1 (16.6667 %)
-;;; 	low-mild	 1 (16.6667 %)
-;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
-;;; 
-;; <-
 ;; =>
-;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/e</span>","value":"#'balmy-hurricane/e"}
 ;; <=
+
+;; @@
+(.evaluateD e [1.0 1.0])
+;; @@
+
+;; @@
+(interpreter/evaluate-d expr vars coords)
+;; @@
 
 ;; @@
 
