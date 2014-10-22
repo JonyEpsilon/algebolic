@@ -5,7 +5,6 @@
 package algebolic.expression;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /* Internal representation of an algebolic expression for the Java interpreter. */
