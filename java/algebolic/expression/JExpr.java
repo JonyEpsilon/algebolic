@@ -56,7 +56,9 @@ public abstract class JExpr {
 
     /* Evaluate the value of a JExpr at a set of coordinates. The coordinates are given as a nested list of Doubles.
     * The function returns a list of lists where each inner list is the value of the function, followed by the value
-    * of the first derivatives of each variable, in index order.*/
+    * of the first derivatives of each variable, in index order.
+    *
+    * Note that this method is not thread-safe.*/
     public List<List<Double>> evaluateDList(List<List<Double>> coords) {
         List<List<Double>> result = new ArrayList<List<Double>>(coords.size());
         for (List<Double> c : coords) {
