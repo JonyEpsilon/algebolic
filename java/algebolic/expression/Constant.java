@@ -9,7 +9,8 @@ import java.util.List;
 public class Constant extends NullaryExpr {
     private final double c;
 
-    public Constant(double c) {
+    public Constant(double c, int numVars) {
+        super(numVars);
         this.c = c;
     }
 
@@ -20,15 +21,13 @@ public class Constant extends NullaryExpr {
 
     @Override
     public double[] evaluateD(List<Double> vars) {
-        int n = vars.size();
-        double[] res = new double[n + 1];
 
-        res[0] = c;
+        dRes[0] = c;
 
         // The derivative of a constant is zero with respect to any variable.
-        for (int i = 0; i < n; i++) {
-            res[i + 1] = 0.0;
+        for (int i = 0; i < numVars; i++) {
+            dRes[i + 1] = 0.0;
         }
-        return res;
+        return dRes;
     }
 }

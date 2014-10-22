@@ -8,7 +8,8 @@ public abstract class UnaryExpr extends JExpr {
 
     protected final JExpr arg1;
 
-    protected UnaryExpr(JExpr arg1) {
+    protected UnaryExpr(JExpr arg1, int numVars) {
+        super(numVars);
         this.arg1 = arg1;
     }
 

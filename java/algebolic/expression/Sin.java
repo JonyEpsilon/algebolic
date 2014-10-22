@@ -8,8 +8,8 @@ import java.util.List;
 
 public class Sin extends UnaryExpr {
 
-    public Sin(JExpr arg1) {
-        super(arg1);
+    public Sin(JExpr arg1, int numVars) {
+        super(arg1, numVars);
     }
 
     @Override
@@ -19,18 +19,16 @@ public class Sin extends UnaryExpr {
 
     @Override
     public double[] evaluateD(List<Double> vars) {
-        int n = vars.size();
-        double[] res = new double[n + 1];
 
         double[] a1v = arg1.evaluateD(vars);
 
-        res[0] = Math.sin(a1v[0]);
+        dRes[0] = Math.sin(a1v[0]);
 
         // Calculate the derivative using the chain rule.
         double c = Math.cos(a1v[0]);
-        for (int i = 0; i < n; i++) {
-            res[i + 1] = a1v[i + 1] * c;
+        for (int i = 0; i < numVars; i++) {
+            dRes[i + 1] = a1v[i + 1] * c;
         }
-        return res;
+        return dRes;
     }
 }

@@ -10,7 +10,8 @@ public class Var extends NullaryExpr {
 
     private final int index;
 
-    public Var(int index) {
+    public Var(int index, int numVars) {
+        super(numVars);
         this.index = index;
     }
 
@@ -21,16 +22,14 @@ public class Var extends NullaryExpr {
 
     @Override
     public double[] evaluateD(List<Double> vars) {
-        int n = vars.size();
-        double[] res = new double[n + 1];
 
-        res[0] = vars.get(index);
+        dRes[0] = vars.get(index);
 
         // The derivative of a variable is one with respect to itself, and zero with respect to any other variable.
-        for (int i = 0; i < n; i++) {
-            if (i == index) res[i + 1] = 1.0;
-            else res[i + 1] = 0.0;
+        for (int i = 0; i < numVars; i++) {
+            if (i == index) dRes[i + 1] = 1.0;
+            else dRes[i + 1] = 0.0;
         }
-        return res;
+        return dRes;
     }
 }

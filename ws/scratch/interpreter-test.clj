@@ -49,7 +49,7 @@ expr
 (time (do (doall (repeatedly 100000 #(interpreter/evaluate expr ['x 'y] [[3.0 4.0]]))) :done))
 ;; @@
 ;; ->
-;;; &quot;Elapsed time: 132.709106 msecs&quot;
+;;; &quot;Elapsed time: 121.040878 msecs&quot;
 ;;; 
 ;; <-
 ;; =>
@@ -78,22 +78,21 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 8255 iterations
-;;;   compilation occured before 16509 iterations
+;;;   compilation occured before 22677 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 49.35991414323788 % of runtime
+;;; WARNING: Final GC required 55.82866244824907 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 33768 in 6 samples of 5628 calls.
-;;;              Execution time mean : 18.100671 µs
-;;;     Execution time std-deviation : 904.961726 ns
-;;;    Execution time lower quantile : 17.094821 µs ( 2.5%)
-;;;    Execution time upper quantile : 19.338785 µs (97.5%)
-;;;                    Overhead used : 1.948220 ns
+;;; Evaluation count : 28692 in 6 samples of 4782 calls.
+;;;              Execution time mean : 21.350788 µs
+;;;     Execution time std-deviation : 1.080753 µs
+;;;    Execution time lower quantile : 20.338374 µs ( 2.5%)
+;;;    Execution time upper quantile : 22.571860 µs (97.5%)
+;;;                    Overhead used : 1.964170 ns
 ;;; 
 ;; <-
 ;; =>
@@ -126,26 +125,29 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 1 iterations
-;;;   compilation occured before 1599 iterations
-;;;   compilation occured before 6393 iterations
-;;;   compilation occured before 52735 iterations
-;;;   compilation occured before 76705 iterations
-;;;   compilation occured before 78303 iterations
+;;;   compilation occured before 3163 iterations
+;;;   compilation occured before 6325 iterations
+;;;   compilation occured before 22135 iterations
+;;;   compilation occured before 25297 iterations
+;;;   compilation occured before 28459 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 50.22652185594409 % of runtime
+;;; WARNING: Final GC required 51.26189558229463 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 18456 in 6 samples of 3076 calls.
-;;;              Execution time mean : 32.889433 µs
-;;;     Execution time std-deviation : 1.284243 µs
-;;;    Execution time lower quantile : 31.354063 µs ( 2.5%)
-;;;    Execution time upper quantile : 34.500190 µs (97.5%)
-;;;                    Overhead used : 1.948220 ns
+;;; Evaluation count : 18618 in 6 samples of 3103 calls.
+;;;              Execution time mean : 35.448615 µs
+;;;     Execution time std-deviation : 2.150887 µs
+;;;    Execution time lower quantile : 34.313232 µs ( 2.5%)
+;;;    Execution time upper quantile : 39.110337 µs (97.5%)
+;;;                    Overhead used : 1.964170 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 14.7018 % Variance is moderately inflated by outliers
 ;;; 
 ;; <-
 ;; =>
@@ -174,24 +176,22 @@ expr
 ;; @@
 ;; ->
 ;;; Warming up for JIT optimisations 5000000000 ...
-;;;   compilation occured before 2620 iterations
-;;;   compilation occured before 5239 iterations
-;;;   compilation occured before 7858 iterations
-;;;   compilation occured before 261901 iterations
+;;;   compilation occured before 2418 iterations
+;;;   compilation occured before 7252 iterations
 ;;; Estimating execution count ...
 ;;; Sampling ...
 ;;; Final GC...
 ;;; Checking GC...
-;;; WARNING: Final GC required 48.89832184412512 % of runtime
+;;; WARNING: Final GC required 46.592252272984155 % of runtime
 ;;; Finding outliers ...
 ;;; Bootstrapping ...
 ;;; Checking outlier significance
-;;; Evaluation count : 91296 in 6 samples of 15216 calls.
-;;;              Execution time mean : 6.728451 µs
-;;;     Execution time std-deviation : 196.027500 ns
-;;;    Execution time lower quantile : 6.540199 µs ( 2.5%)
-;;;    Execution time upper quantile : 6.938209 µs (97.5%)
-;;;                    Overhead used : 1.948220 ns
+;;; Evaluation count : 89316 in 6 samples of 14886 calls.
+;;;              Execution time mean : 8.894085 µs
+;;;     Execution time std-deviation : 3.040514 µs
+;;;    Execution time lower quantile : 6.750802 µs ( 2.5%)
+;;;    Execution time upper quantile : 12.695283 µs (97.5%)
+;;;                    Overhead used : 1.964170 ns
 ;;; 
 ;; <-
 ;; =>
@@ -199,31 +199,33 @@ expr
 ;; <=
 
 ;; @@
-;;[:plus [:times 2.0 [:times 'x 'x]] [:times 3.0 'y]]
-(def ^algebolic.expression.JExpr e (interpreter/->jexpr '[x y] 'x))
+(def vars '[x y])
+(def expr [:plus [:times 2.0 [:times 'x 'x]] [:times 3.0 'y]])
+(def coords (map (fn [x] [x (+ x 1.0)]) (range 0.0 100.0 0.1)))
+(def ^algebolic.expression.JExpr e (interpreter/->jexpr vars expr))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;balmy-hurricane/e</span>","value":"#'balmy-hurricane/e"}
 ;; <=
 
 ;; @@
-(.evaluateD e [2.0 4.0])
+(.evaluateD e [3.0 4.0])
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;double[] [D@4c92d5f8&gt;</span>","value":"#<double[] [D@4c92d5f8>"}
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;double[] [D@3c080a5&gt;</span>","value":"#<double[] [D@3c080a5>"}
 ;; <=
 
 ;; @@
-(criterium/quick-bench (.evaluate e [2.0 3.0]))
+(criterium/quick-bench (.evaluateD e [2.0 3.0]))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 37.776830749692245 % of runtime
-;;; Evaluation count : 55321560 in 6 samples of 9220260 calls.
-;;;              Execution time mean : 9.124624 ns
-;;;     Execution time std-deviation : 0.466675 ns
-;;;    Execution time lower quantile : 8.313401 ns ( 2.5%)
-;;;    Execution time upper quantile : 9.519116 ns (97.5%)
-;;;                    Overhead used : 1.940249 ns
+;;; WARNING: Final GC required 35.123706176942285 % of runtime
+;;; Evaluation count : 9128262 in 6 samples of 1521377 calls.
+;;;              Execution time mean : 65.295136 ns
+;;;     Execution time std-deviation : 1.637121 ns
+;;;    Execution time lower quantile : 63.352048 ns ( 2.5%)
+;;;    Execution time upper quantile : 66.936482 ns (97.5%)
+;;;                    Overhead used : 1.964170 ns
 ;;; 
 ;; <-
 ;; =>
@@ -231,8 +233,25 @@ expr
 ;; <=
 
 ;; @@
-(interpreter/evaluate-d expr vars coords)
+(criterium/quick-bench (interpreter/evaluate-d expr vars coords))
 ;; @@
+;; ->
+;;; WARNING: Final GC required 35.52281940916586 % of runtime
+;;; Evaluation count : 4416 in 6 samples of 736 calls.
+;;;              Execution time mean : 136.218011 µs
+;;;     Execution time std-deviation : 3.943339 µs
+;;;    Execution time lower quantile : 131.241573 µs ( 2.5%)
+;;;    Execution time upper quantile : 141.017827 µs (97.5%)
+;;;                    Overhead used : 1.964170 ns
+;;; 
+;;; Found 1 outliers in 6 samples (16.6667 %)
+;;; 	low-severe	 1 (16.6667 %)
+;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
 
 ;; @@
 
