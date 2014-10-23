@@ -33,7 +33,7 @@ public class Divide extends BinaryExpr {
 
         // Quotient rule for each variable.
         for (int i = 0; i < numVars; i++) {
-            dRes[i + 1] = ((a1v[i + 1] * a2v[0]) - (a1v[0] * a2v[i + 1]) / (a2v[0] * a2v[0]));
+            dRes[i + 1] = ((a1v[i + 1] * a2v[0]) - (a1v[0] * a2v[i + 1])) / (a2v[0] * a2v[0]);
         }
         return dRes;
     }
