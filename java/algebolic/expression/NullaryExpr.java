@@ -5,6 +5,11 @@
 package algebolic.expression;
 
 public abstract class NullaryExpr extends JExpr {
+
+    protected NullaryExpr(int numVars) {
+        super(numVars);
+    }
+
     @Override
     public int size() {
         return 1;

@@ -29,23 +29,37 @@
   translated to `Var(0)` and `'y` to `Var(1)`."
   ;; This type hint is critical, otherwise reflection on the indexOf call dominates the runtime.
   [^APersistentVector var-list expr]
-  (cond
-    (symbol? expr) (Var. (.indexOf var-list expr))
-    (number? expr) (Constant. expr)
-    true (case (nth expr 0)
-           :plus (Plus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
-           :minus (Minus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
-           :times (Times. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
-           :div (Divide. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)))
-           :sin (Sin. (->jexpr var-list (nth expr 1)))
-           :cos (Cos. (->jexpr var-list (nth expr 1)))
-           )))
+  ;; Using `count` would seem more natural here, but it adds significantly to the runtime in a way that I couldn't
+  ;; seem to eliminate.
+  (let [numVars (.length var-list)]
+    (cond
+      (symbol? expr) (Var. (.indexOf var-list expr) numVars)
+      (number? expr) (Constant. expr numVars)
+      true (case (nth expr 0)
+             :plus (Plus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)) numVars)
+             :minus (Minus. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)) numVars)
+             :times (Times. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)) numVars)
+             :div (Divide. (->jexpr var-list (nth expr 1)) (->jexpr var-list (nth expr 2)) numVars)
+             :sin (Sin. (->jexpr var-list (nth expr 1)) numVars)
+             :cos (Cos. (->jexpr var-list (nth expr 1)) numVars)
+             ))))
 
 (defn ^Double evaluate
   "Evaluates the given expression at the given coordinates. `vars` is a vector of the variables in the expression, for
-   example `['x 'y]`. `coords` is the values of the variables at which to evaluate the expression. It should be in the
-   format `[[x1 y1] [x2 y2] ...]`, where the variables are given in the order specified in `vars`. The function returns
-   a vector of the expression values `[v1 v2 v3]`."
+  example `['x 'y]`. `coords` is the values of the variables at which to evaluate the expression. It should be in the
+  format `[[x1 y1] [x2 y2] ...]`, where the variables are given in the order specified in `vars`. The function returns
+  an ArrayList of the expression values `[v1 v2 v3]`."
   [expr vars coords]
   (let [jexpr ^JExpr (->jexpr vars expr)]
     (.evaluateList jexpr coords)))
+
+(defn evaluate-d
+  "Evaluates the given expression and its first derivatives, at the given coordinates. `vars` is a vector of the
+  variables in the expression, for example `['x 'y]`. `coords` is the values of the variables at which to evaluate
+  the expression. It should be in the format `[[x1 y1] [x2 y2] ...]`, where the variables are given in the order
+  specified in `vars`. The function returns an ArrayList of the ArrayLists. The inner lists contain the function
+  value, followed by the first derivatives with respect to each variable, in the order given in `vars`. The outer
+  list contains these values for each point in `coords`."
+  [expr vars coords]
+  (let [jexpr ^JExpr (->jexpr vars expr)]
+    (.evaluateDList jexpr coords)))

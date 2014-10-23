@@ -9,7 +9,8 @@ public abstract class BinaryExpr extends JExpr {
     protected final JExpr arg1;
     protected final JExpr arg2;
 
-    public BinaryExpr(JExpr arg1, JExpr arg2) {
+    public BinaryExpr(JExpr arg1, JExpr arg2, int numVars) {
+        super(numVars);
         this.arg1 = arg1;
         this.arg2 = arg2;
     }
