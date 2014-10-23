@@ -45,20 +45,21 @@
 (interpreter/->jexpr vars expr)
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.Plus@560ea43b&gt;</span>","value":"#<Plus algebolic.expression.Plus@560ea43b>"}
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Plus algebolic.expression.Plus@6d5c05f3&gt;</span>","value":"#<Plus algebolic.expression.Plus@6d5c05f3>"}
 ;; <=
 
 ;; @@
 (criterium/quick-bench (interpreter/->jexpr vars expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 32.09562087113482 % of runtime
-;;; Evaluation count : 1252098 in 6 samples of 208683 calls.
-;;;              Execution time mean : 517.630096 ns
-;;;     Execution time std-deviation : 18.672823 ns
-;;;    Execution time lower quantile : 493.348366 ns ( 2.5%)
-;;;    Execution time upper quantile : 540.500155 ns (97.5%)
-;;;                    Overhead used : 1.964170 ns
+;;; WARNING: Final GC required 3.7470610997475293 % of runtime
+;;; WARNING: Final GC required 31.738205166041112 % of runtime
+;;; Evaluation count : 1241982 in 6 samples of 206997 calls.
+;;;              Execution time mean : 503.066835 ns
+;;;     Execution time std-deviation : 10.441452 ns
+;;;    Execution time lower quantile : 490.550936 ns ( 2.5%)
+;;;    Execution time upper quantile : 515.515403 ns (97.5%)
+;;;                    Overhead used : 2.030744 ns
 ;;; 
 ;; <-
 ;; =>
@@ -76,13 +77,13 @@
 (criterium/quick-bench (interpreter/evaluate expr vars coords))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 33.70842496708887 % of runtime
-;;; Evaluation count : 22902 in 6 samples of 3817 calls.
-;;;              Execution time mean : 27.058773 µs
-;;;     Execution time std-deviation : 1.544751 µs
-;;;    Execution time lower quantile : 25.369139 µs ( 2.5%)
-;;;    Execution time upper quantile : 28.550102 µs (97.5%)
-;;;                    Overhead used : 1.964170 ns
+;;; WARNING: Final GC required 31.395296907447566 % of runtime
+;;; Evaluation count : 22866 in 6 samples of 3811 calls.
+;;;              Execution time mean : 25.616821 µs
+;;;     Execution time std-deviation : 468.087448 ns
+;;;    Execution time lower quantile : 25.035431 µs ( 2.5%)
+;;;    Execution time upper quantile : 26.171148 µs (97.5%)
+;;;                    Overhead used : 2.030744 ns
 ;;; 
 ;; <-
 ;; =>
@@ -104,17 +105,13 @@
 (criterium/quick-bench (score/abs-error vars coords data expr))
 ;; @@
 ;; ->
-;;; WARNING: Final GC required 31.79588711321808 % of runtime
-;;; Evaluation count : 19278 in 6 samples of 3213 calls.
-;;;              Execution time mean : 32.052864 µs
-;;;     Execution time std-deviation : 326.871096 ns
-;;;    Execution time lower quantile : 31.512308 µs ( 2.5%)
-;;;    Execution time upper quantile : 32.442756 µs (97.5%)
-;;;                    Overhead used : 1.928557 ns
-;;; 
-;;; Found 1 outliers in 6 samples (16.6667 %)
-;;; 	low-severe	 1 (16.6667 %)
-;;;  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+;;; WARNING: Final GC required 28.82074300864181 % of runtime
+;;; Evaluation count : 19266 in 6 samples of 3211 calls.
+;;;              Execution time mean : 33.961617 µs
+;;;     Execution time std-deviation : 693.839476 ns
+;;;    Execution time lower quantile : 33.087240 µs ( 2.5%)
+;;;    Execution time upper quantile : 34.735046 µs (97.5%)
+;;;                    Overhead used : 2.030744 ns
 ;;; 
 ;; <-
 ;; =>
@@ -143,6 +140,27 @@
 ;;;    Execution time lower quantile : 211.434068 ns ( 2.5%)
 ;;;    Execution time upper quantile : 219.914967 ns (97.5%)
 ;;;                    Overhead used : 1.928557 ns
+;;; 
+;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; **
+;;; Evaluation with derivatives speed:
+;; **
+
+;; @@
+(criterium/quick-bench (interpreter/evaluate-d expr vars coords))
+;; @@
+;; ->
+;;; WARNING: Final GC required 29.61508409878209 % of runtime
+;;; Evaluation count : 7164 in 6 samples of 1194 calls.
+;;;              Execution time mean : 88.134369 µs
+;;;     Execution time std-deviation : 3.554069 µs
+;;;    Execution time lower quantile : 83.040215 µs ( 2.5%)
+;;;    Execution time upper quantile : 90.738566 µs (97.5%)
+;;;                    Overhead used : 2.030744 ns
 ;;; 
 ;; <-
 ;; =>
