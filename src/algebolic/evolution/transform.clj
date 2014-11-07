@@ -1,6 +1,12 @@
-;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
-;;;;
-;;;; Not for distribution.
+;
+; This file is part of algebolic.
+;
+; Copyright (C) 2014-, Imperial College, London, All rights reserved.
+;
+; Contributors: Jony Hudson
+;
+; Not for distribution.
+;
 
 (ns algebolic.evolution.transform
   "Functions for transforming individuals, and the population. These can be supplied to the EA

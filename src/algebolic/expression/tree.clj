@@ -1,6 +1,12 @@
-;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
-;;;;
-;;;; Not for distribution.
+;
+; This file is part of algebolic.
+;
+; Copyright (C) 2014-, Imperial College, London, All rights reserved.
+;
+; Contributors: Jony Hudson
+;
+; Not for distribution.
+;
 
 (ns algebolic.expression.tree
   "Contains operations that act on expressions as trees. These are used to implement genetic operations

@@ -1,6 +1,12 @@
-;;;; This file is part of algebolic. Copyright (C) 2014-, Jony Hudson.
-;;;;
-;;;; Not for distribution.
+;
+; This file is part of algebolic.
+;
+; Copyright (C) 2014-, Imperial College, London, All rights reserved.
+;
+; Contributors: Jony Hudson
+;
+; Not for distribution.
+;
 
 (defproject algebolic "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.6.0"]
