@@ -24,7 +24,7 @@
             [algebolic.evolution.metrics :as metrics]))
 
 (defn evolve
-  "Runs one generation of the evolutionary algorithm. Takes a zeitgeist and a configuration
+  "Runs one generation of the evolutionary algorithm. Takes a zeitgeist and a generation configuration
   and returns the new zeitgeist.
 
   This function just provides the plumbing and calls out to functions provided in the config to do the actual work.
@@ -34,10 +34,11 @@
    - generate a new rabble from the mating pool, using a given selection procedure and given genetic operations
    - run a list of transformations on the rabble
    - update the scores of the new rabble
-   - update metrics for the whole population and store in the zeitgeist
-   - run a reporting function to provide the user with information about this generation."
-  [zeitgeist config]
-  (let [{:keys [ea-config transformations score-functions reporting-function]} config
+   - update metrics
+   - run a reporting function to provide the user with information about this generation
+   - run a checkpoint function to optionally save the state of the algorithm."
+  [zeitgeist generation-config]
+  (let [{:keys [ea-config transformations score-functions reporting-function checkpoint-function]} generation-config
         {:keys [elite-selector mating-pool-selector reproduction-config]} ea-config
         ;; we time each generations execution (against the wall-clock)
         start-time (System/currentTimeMillis)
@@ -55,40 +56,41 @@
         scored-transformed-rabble (scoring/update-scores transformed-rabble score-functions)
         evolved-zg (assoc (assoc zeitgeist :rabble scored-transformed-rabble) :elite new-elite)
         end-time (System/currentTimeMillis)
-        ;; update some stats on the zg
-        stats {:age (+ 1 (or (:age evolved-zg) 0))
-               :time (- end-time start-time)
-               :selection-time (- elite-selected-time start-time)
-               :reproduction-time (- rabble-ready-time elite-selected-time)
-               :scoring-time (- end-time rabble-ready-time)}
-        final-zg (merge evolved-zg stats)
-        _ (when reporting-function (reporting-function final-zg))]
+        ;; track generation number
+        final-zg (update-in evolved-zg [:age] (fn [x] (if (nil? x) 0 (inc x))))
+        ;; update the timing metrics
+        _ (metrics/add! :time (- end-time start-time))
+        _ (metrics/add! :selection-time (- elite-selected-time start-time))
+        _ (metrics/add! :reproduction-time (- rabble-ready-time elite-selected-time))
+        _ (metrics/add! :scoring-time (- end-time rabble-ready-time))
+        ;; add stats of all the scores to the metrics
+        _ (mapv #(metrics/add-stats!
+                 (first %)
+                 (mapv (first %) (into scored-transformed-rabble new-elite)))
+               score-functions)
+        ;; report and checkpoint
+        _ (when reporting-function (reporting-function final-zg))
+        _ (when checkpoint-function (checkpoint-function final-zg))]
     final-zg))
 
 (defn run-evolution
   "Runs the evolutionary algorithm until the stopping-function in the config is satisfied. Returns
   the final zeitgeist. Runs the checkpointing function in the config after each generation.
 
-  Metrics are accumulated and stored in a user-provided atom. This allows one to monitor the run in
-  realtime by watching the atom in another thread, if desired."
-  [config metrics-atom]
+  Metrics are accumulated and stored in an atom. This allows one to monitor the run in realtime by watching
+  the atom in another thread, if desired."
+  [config initial-zg]
   ;; score the initial zeitgeist and store it in a atom
-  (let [initial-zg (:initial-zeitgeist config)
-        scored-initial-zg (assoc initial-zg :rabble
+  (let [scored-initial-zg (assoc initial-zg :rabble
                                             (scoring/update-scores (:rabble initial-zg) (:score-functions config)))
         zeitgeist (atom scored-initial-zg)]
-    ;; initialise the metrics atom
-    (reset! metrics-atom (metrics/initialise-metrics (keys (:score-functions config))))
+    ;; reset metrics
+    (metrics/clear!)
     ;; run the main loop
     (while (not ((:stopping-condition config) @zeitgeist))
       ;; evolve a new generation
       (let [new-zg (evolve @zeitgeist config)
-            _ (reset! zeitgeist new-zg)
-            ;; run the checkpointing function, if present
-            cp-func (:checkpoint-function config)
-            _ (when (not (nil? cp-func)) (cp-func @zeitgeist))
-            ;; update the metrics
-            _ (metrics/update-metrics! new-zg metrics-atom (keys (:score-functions config)))]
+            _ (reset! zeitgeist new-zg)]
         ))
     @zeitgeist))
 
