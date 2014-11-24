@@ -84,7 +84,6 @@
                                        (partial genetics/boost-hard min-size
                                                 #(genetics/random-full-tree functions terminals 3)))]
      :score-functions        score-functions
-     :stopping-condition     #(>= (:age %) 50)
      :reporting-function     (fn [z] (print ".") (flush))}))
 ;; @@
 ;; =>
@@ -105,7 +104,10 @@
   (map (fn [i] [(:error i) (:complexity i)])
        (pareto/non-dominated-individuals
          [:error :complexity]
-         (:elite (evolution/run-evolution (generation-config) initial-zeitgeist)))))
+         (:elite (evolution/run-evolution
+                   (generation-config)
+                   initial-zeitgeist
+                   (fn [zg gc] (>= (:age zg) 500)))))))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;algebolic.near-spea-comparison/get-pareto-coords</span>","value":"#'algebolic.near-spea-comparison/get-pareto-coords"}
@@ -115,7 +117,7 @@
 (def spea2-coords (doall (repeatedly 10 get-pareto-coords)))
 ;; @@
 ;; ->
-;;; ....................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+;;; ..................................................
 ;; <-
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;algebolic.near-spea-comparison/spea2-coords</span>","value":"#'algebolic.near-spea-comparison/spea2-coords"}

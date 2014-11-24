@@ -9,11 +9,13 @@
 ;
 
 (ns algebolic.evolution.core
-  "The functions in this namespace provide generic plumbing for a generational evolutionary algorithm.
+  "The functions in this namespace provide generic plumbing for an adaptive generational evolutionary algorithm.
   Supported features include explicit mating pool generation, optional maintenance of an elite population,
-  and optional pre-processing/transformation of the population before scoring. Central to these functions
-  is the zeitgeist data structure. The zeitgeist contains all of the state of the evolutionary algorithm at one
-  generation.
+  optional pre-processing/transformation of the population before scoring, and optional flexible adaptation during
+  the run. Central to these functions are the zeitgeist and generation-config data structures. The zeitgeist contains
+  all of the state of the evolutionary algorithm at one generation. The generation-config gives a complete specification
+  of how to evolve from one generation to the next. Adpatation is introduced by allowing the generation-config to change
+  during the run.
 
   This plumbing is general enough to run simple GA, or more complex multi-objective algorithms like NSGA-II
   or SPEA2, along with hybrid algorithms that combine these with hill-descent and other non EA
@@ -24,7 +26,7 @@
             [algebolic.evolution.metrics :as metrics]))
 
 (defn evolve
-  "Runs one generation of the evolutionary algorithm. Takes a zeitgeist and a generation configuration
+  "Runs one generation of the evolutionary algorithm. Takes a zeitgeist and a generation-config
   and returns the new zeitgeist.
 
   This function just provides the plumbing and calls out to functions provided in the config to do the actual work.
@@ -73,26 +75,47 @@
         _ (when checkpoint-function (checkpoint-function final-zg))]
     final-zg))
 
+
 (defn run-evolution
-  "Runs the evolutionary algorithm until the stopping-function in the config is satisfied. Returns
-  the final zeitgeist. Runs the checkpointing function in the config after each generation.
+  "Runs the evolutionary algorithm until the stopping-function is satisfied. The stopping function is passed both
+  the current zeitgeist and the current generation-config (so it can stop in response to adaptive behaviour).
+  Returns the final zeitgeist.
+
+  The algorithm can adapt to the state of the run through the adapt function, if provided this will be called
+  after each generation, with the previous generation's generation-config, and the new zeitgeist. It must return
+  the generation-config for the next generation. If no adapt-function is provided, then the same generation-config
+  will be used for each generation.
+
+  Each iteration round the loop looks something like this:
+
+    zg                              new-zg
+  -----> evolve -------+-------------------->
+           ^           |
+   g-c     |           v           new-g-c
+  ---------+----- adapt-function ----------->
+
+  When viewed this way, it's natural to think of the generation-config as a kind of environment for the evolution.
+  In an adaptive run, not only does the population change to fit the environment, the environment also changes,
+  possibly in response to the population.
 
   Metrics are accumulated and stored in an atom. This allows one to monitor the run in realtime by watching
   the atom in another thread, if desired."
-  [config initial-zg]
-  ;; score the initial zeitgeist and store it in a atom
-  (let [scored-initial-zg (assoc initial-zg :rabble
-                                            (scoring/update-scores (:rabble initial-zg) (:score-functions config)))
-        zeitgeist (atom scored-initial-zg)]
+  [initial-gc initial-zg stopping-function & adapt-function]
+  ;; score the initial zeitgeist
+  (let [scored-initial-zg (update-in initial-zg [:rabble] #(scoring/update-scores % (:score-functions initial-gc)))
+        adapt (if adapt-function adapt-function (fn [_ gc] gc))]
     ;; reset metrics
     (metrics/clear!)
     ;; run the main loop
-    (while (not ((:stopping-condition config) @zeitgeist))
-      ;; evolve a new generation
-      (let [new-zg (evolve @zeitgeist config)
-            _ (reset! zeitgeist new-zg)]
-        ))
-    @zeitgeist))
+    (loop [zg scored-initial-zg
+           gc initial-gc]
+      (if (not (stopping-function zg gc))
+        ;; evolve a new generation and adapt
+        (let [new-zg (evolve zg gc)
+              new-gc (adapt new-zg gc)]
+          (recur new-zg new-gc))
+        ;; stopping condition met, return the final zeitgiest
+        zg))))
 
 (defn make-zeitgeist
   "A helper function for making an initial zeitgeist from a list of genotypes."
