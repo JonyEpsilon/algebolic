@@ -56,7 +56,8 @@
                              ((apply comp transformations) new-rabble))
         rabble-ready-time (System/currentTimeMillis)
         scored-transformed-rabble (scoring/update-scores transformed-rabble score-functions)
-        evolved-zg (assoc (assoc zeitgeist :rabble scored-transformed-rabble) :elite new-elite)
+        scored-new-elite (scoring/update-scores new-elite score-functions)
+        evolved-zg (assoc (assoc zeitgeist :rabble scored-transformed-rabble) :elite scored-new-elite)
         end-time (System/currentTimeMillis)
         ;; track generation number
         final-zg (update-in evolved-zg [:age] (fn [x] (if (nil? x) 0 (inc x))))
@@ -75,6 +76,10 @@
         _ (when checkpoint-function (checkpoint-function final-zg))]
     final-zg))
 
+(defn- no-adpatation
+  "An adaptation function that does ... no adapation. Used as a default below."
+  [zg gc]
+  gc)
 
 (defn run-evolution
   "Runs the evolutionary algorithm until the stopping-function is satisfied. The stopping function is passed both
@@ -100,7 +105,9 @@
 
   Metrics are accumulated and stored in an atom. This allows one to monitor the run in realtime by watching
   the atom in another thread, if desired."
-  [initial-gc initial-zg stopping-function & adapt-function]
+  ([initial-gc initial-zg stopping-function]
+   (run-evolution initial-gc initial-zg stopping-function no-adpatation))
+  ([initial-gc initial-zg stopping-function adapt-function]
   ;; score the initial zeitgeist
   (let [scored-initial-zg (update-in initial-zg [:rabble] #(scoring/update-scores % (:score-functions initial-gc)))
         adapt (if adapt-function adapt-function (fn [_ gc] gc))]
@@ -115,7 +122,8 @@
               new-gc (adapt new-zg gc)]
           (recur new-zg new-gc))
         ;; stopping condition met, return the final zeitgiest
-        zg))))
+        zg)))))
+
 
 (defn make-zeitgeist
   "A helper function for making an initial zeitgeist from a list of genotypes."

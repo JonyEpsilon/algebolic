@@ -20,7 +20,9 @@
   a list of symbols that represent the coordinates in the expression, in the order that they appear in the coords
   input."
   [vars coords data expr]
-  (let [expr-vals (interpreter/evaluate expr vars coords)]
+  (let [expr-vals (interpreter/evaluate expr vars coords)
+        ;;_ (when (< (rand) 0.001) (print (count data)))
+        ]
     (Scores/chiSquaredAbs expr-vals data)))
 
 (defn abs-error-pp
