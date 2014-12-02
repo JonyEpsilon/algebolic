@@ -25,7 +25,7 @@
       :times  (str/join " \\cdot " (map latexify (rest expr)))
       :div (str "\\frac{" (latexify (first (rest expr))) " }{ " (latexify (second (rest expr))) "}")
       :sin (str "\\sin(" (latexify (second expr)) ")")
-      :cos (str "\\cos(" (latexify (second expr))) ")")
+      :cos (str "\\cos(" (latexify (second expr)) ")"))
     (if (float? expr) (format "%.3f" expr)
                       (pr-str expr))))
 
