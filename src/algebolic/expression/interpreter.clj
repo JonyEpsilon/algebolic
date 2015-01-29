@@ -63,7 +63,7 @@
   "Evaluates the given expression and its first derivatives, at the given coordinates. `vars` is a vector of the
   variables in the expression, for example `['x 'y]`. `coords` is the values of the variables at which to evaluate
   the expression. It should be in the format `[[x1 y1] [x2 y2] ...]`, where the variables are given in the order
-  specified in `vars`. The function returns an ArrayList of the ArrayLists. The inner lists contain the function
+  specified in `vars`. The function returns an ArrayList of ArrayList. The inner lists contain the function
   value, followed by the first derivatives with respect to each variable, in the order given in `vars`. The outer
   list contains these values for each point in `coords`."
   [expr vars coords]

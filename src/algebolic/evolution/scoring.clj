@@ -25,4 +25,4 @@
   "Update the scores for each individual in the given list. See above for how the score functions are
    specified."
   [individuals score-funcs]
-  (doall (map (partial update-individual-scores score-funcs) individuals)))
+  (doall (pmap (partial update-individual-scores score-funcs) individuals)))
