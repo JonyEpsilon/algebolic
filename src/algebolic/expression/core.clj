@@ -28,6 +28,7 @@
 
 ;; When you change the function set you have to make corresponding changes to a number of things:
 ;; - the interpreter (interpreter.clj and the Java code in `algebolic.expression`)
+;; - the fast node count code (tree.clj)
 ;; - the Mathematica export code (mma.clj)
 ;; - the LaTex export code (render.clj)
 (def ^:private function-set
@@ -37,7 +38,8 @@
    {:name :times :arity 2}
    {:name :div :arity 2}
    {:name :sin :arity 1}
-   {:name :cos :arity 1}])
+   {:name :cos :arity 1}
+   {:name :square :arity 1}])
 
 (defn get-functions
   "A helper for selecting a subset of the function set. Pass the names of the symbols you want (as keywords) in a set."

@@ -26,6 +26,7 @@
                                                   (fullform (nth expr 2)) "]")
                                       :sin (str "Sin[" (fullform (nth expr 1)) "]")
                                       :cos (str "Cos[" (fullform (nth expr 1)) "]")
+                                      :square (str "Power[" (fullform (nth expr 1)) ", 2]")
                                       ;; make sure we notice if something has gone wrong
                                       (println "Throw[\"Unknown expression: " expr "\"]"))
     (symbol? expr) (str expr)

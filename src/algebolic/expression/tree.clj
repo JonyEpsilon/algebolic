@@ -30,7 +30,8 @@
            :times (+ 1 (count-nodes (nth expr 1)) (count-nodes (nth expr 2)))
            :div (+ 1 (count-nodes (nth expr 1)) (count-nodes (nth expr 2)))
            :sin (+ 1 (count-nodes (nth expr 1)))
-           :cos (+ 1 (count-nodes (nth expr 1))))))
+           :cos (+ 1 (count-nodes (nth expr 1)))
+           :square (+ 1 (count-nodes (nth expr 1))))))
 
 (defn expr-zip
   "We define a zipper constructor for manipulating expression trees. Differs from the ordinary

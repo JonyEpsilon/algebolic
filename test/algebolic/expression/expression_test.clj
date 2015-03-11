@@ -38,7 +38,7 @@
 (def poly2 [:div [:minus 'x 'y] [:plus 'x 'y]])
 (def trig1 [:cos [:plus 'y [:times 3.0 'x]]])
 (def trig2 [:cos [:sin [:plus 'x [:times 'y 'x]]]])
-
+(def power [:plus [:square 'x] 'y])
 
 (deftest evaluation
   (testing "Polynomials"
@@ -53,7 +53,10 @@
     (is (approx-eq-l (interpreter/evaluate trig1 '[x y] poly-coords)
                      [-0.653644 0.907447 0.283662]))
     (is (approx-eq-l (interpreter/evaluate trig2 '[x y] poly-coords)
-                     [0.6143 0.79591 0.666367]))))
+                     [0.6143 0.79591 0.666367])))
+  (testing "Powers"
+    (is (= (interpreter/evaluate power '[x y] poly-coords) [2.0 13.0 -1.0]))))
+
 
 (deftest evaluation-d
   (testing "Polynomials"
@@ -64,5 +67,6 @@
     (is (approx-eq-ll (interpreter/evaluate-d trig1 '[x y] poly-coords)
                       [[-0.653644 2.27041 0.756802] [0.907447 -1.2605 -0.420167] [0.283662 -2.87677 -0.958924]]))
     (is (approx-eq-ll (interpreter/evaluate-d trig2 '[x y] poly-coords)
-                      [[0.6143 0.65674 0.32837] [0.79591 2.29963 1.37978] [0.666367 0.402862 0.402862]]))
-    ))
+                      [[0.6143 0.65674 0.32837] [0.79591 2.29963 1.37978] [0.666367 0.402862 0.402862]])))
+  (testing "Powers"
+    (is (= (interpreter/evaluate-d power '[x y] poly-coords) [[2.0 2.0 1.0] [13.0 6.0 1.0] [-1.0 -2.0 1.0]]))))
