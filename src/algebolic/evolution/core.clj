@@ -25,6 +25,9 @@
             [algebolic.evolution.scoring :as scoring]
             [algebolic.evolution.metrics :as metrics]))
 
+;; An atom to store the lastest generation which is useful for debugging etc
+(def latest (atom {}))
+
 (defn evolve
   "Runs one generation of the evolutionary algorithm. Takes a zeitgeist and a generation-config
   and returns the new zeitgeist.
@@ -58,6 +61,7 @@
         scored-transformed-rabble (scoring/update-scores transformed-rabble score-functions)
         scored-new-elite (scoring/update-scores new-elite score-functions)
         evolved-zg (assoc (assoc zeitgeist :rabble scored-transformed-rabble) :elite scored-new-elite)
+        _ (reset! latest evolved-zg)
         end-time (System/currentTimeMillis)
         ;; track generation number
         final-zg (update-in evolved-zg [:age] (fn [x] (if (nil? x) 0 (inc x))))
