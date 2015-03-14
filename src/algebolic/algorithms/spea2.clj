@@ -139,15 +139,31 @@
                                       (- (count oversized-archive) target-size))]
     (:archive thinned-tree-and-archive)))
 
+(defn- dedupe-individual
+  "Checks whether an individual has been seen, wrt a seen-set, and if not adds it to the collection (and set)."
+  [goals [seen-set deduped-coll] individual]
+  (let [coords (coords-from-individual goals individual)
+        dupe (contains? seen-set coords)]
+    (if dupe
+      [seen-set deduped-coll]
+      [(conj seen-set coords) (conj deduped-coll individual)])))
+
+(defn deduplicate-population
+  "Remove duplicated with respect to the scores for `goals` from the given population."
+  [goals archive]
+  (last (reduce (partial dedupe-individual goals) [#{} []] archive)))
 
 (defn make-new-archive
   "Implements the core step of the SPEA2 algorithm which is constructing a new archive of elite
   individuals from the old archive and a population of new individuals."
-  [goals comparison-depth archive-size population old-archive]
+  [goals comparison-depth deduplicate archive-size population old-archive]
   (let [pool (into population old-archive)
         scored-pool (calculate-fitnesses goals pool)
-        ;; individuals that are non-dominated will have a fitness less than 1
-        new-elites (filter #(< (:spea2-fitness %) 1.0) scored-pool)
+        ;; individuals that are non-dominated will have a fitness less than 1. Duplicates are removed if the
+        ;; dedupe parameter is true. It's not quite clear to me whether deduplication is part of the SPEA2 algorithm
+        ;; as published. But I suppose it doesn't matter, so long as you can turn it on and off!
+        dedupe-fn (if deduplicate (partial deduplicate-population goals) identity)
+        new-elites (dedupe-fn (filter #(< (:spea2-fitness %) 1.0) scored-pool))
         new-size (count new-elites)
         ;;_ (println "New archive raw size: " new-size)
         ]
@@ -157,8 +173,8 @@
       (= new-size archive-size) new-elites
       ;; if we have too few non-dominated individuals to fill the archive then we select the dominated
       ;; individuals with the lowest fitness scores to make up the difference. The easiest way to do this
-      ;; is to just sort and select from the pool.
-      (< new-size archive-size) (take archive-size (sort-by :spea2-fitness < scored-pool))
+      ;; is to just sort and select from the pool. If requested, the pool is deduplicated. See above for notes.
+      (< new-size archive-size) (take archive-size (sort-by :spea2-fitness < (dedupe-fn scored-pool)))
       ;; and finally, if we've got too many non-dominated individuals then some of them are for the chop
       (> new-size archive-size) (thin-archive goals new-elites comparison-depth archive-size))))
 
@@ -174,10 +190,19 @@
   :spea2-fitness calculated. Then, a new elite population is constructed made up of the non-dominated
   individuals - with thinning if there are too many elite individuals, and promotion from the population
   if there are too few. Finally, a new generation is bred from the archived individuals, using binary
-  tournament selection on the :spea2-fitness, and the cycle begins again."
+  tournament selection on the :spea2-fitness, and the cycle begins again.
+
+  There are a couple of deviations from the SPEA2 algorithm as described in the literature. First, the
+  thinning algorithm is slightly simplified (see above). The setting :comparison-depth controls this
+  simplification. The default value should be fine. Second, there is the option to de-duplicate the elite
+  and the population at every iteration. This is off by default, which I _think_ corresponds to the published
+  algorithm, but can be controlled with the boolean :deduplicate option."
   [config]
-  (let [{:keys [unary-ops binary-ops goals archive-size comparison-depth] :or {comparison-depth 5}} config]
-    {:elite-selector       (fn [rabble elite] (make-new-archive goals comparison-depth archive-size rabble elite))
+  (let [{:keys [unary-ops binary-ops goals archive-size comparison-depth deduplicate]
+         :or   {comparison-depth 5
+                deduplicate false}} config]
+    {:elite-selector       (fn [rabble elite]
+                               (make-new-archive goals deduplicate comparison-depth archive-size rabble elite))
      :mating-pool-selector (fn [_ elite] elite)
      :reproduction-config  {:selector   (partial selection/tournament-selector 2 :spea2-fitness)
                             :unary-ops  unary-ops
