@@ -156,7 +156,7 @@
 (defn make-new-archive
   "Implements the core step of the SPEA2 algorithm which is constructing a new archive of elite
   individuals from the old archive and a population of new individuals."
-  [goals comparison-depth deduplicate archive-size population old-archive]
+  [goals deduplicate comparison-depth archive-size population old-archive]
   (let [pool (into population old-archive)
         scored-pool (calculate-fitnesses goals pool)
         ;; individuals that are non-dominated will have a fitness less than 1. Duplicates are removed if the
