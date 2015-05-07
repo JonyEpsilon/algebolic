@@ -33,6 +33,22 @@
            :cos (+ 1 (count-nodes (nth expr 1)))
            :square (+ 1 (count-nodes (nth expr 1))))))
 
+;; TODO: use arity, rather than explicitly listing all function symbols
+(defn depth
+  "Count the depth of a tree, including both the function symbols and terminals."
+  [expr]
+  (cond
+    (symbol? expr) 1
+    (number? expr) 1
+    true (case (nth expr 0)
+           :plus (+ 1 (max (depth (nth expr 1)) (depth (nth expr 2))))
+           :minus (+ 1 (max (depth (nth expr 1)) (depth (nth expr 2))))
+           :times (+ 1 (max (depth (nth expr 1)) (depth (nth expr 2))))
+           :div (+ 1 (max (depth (nth expr 1)) (depth (nth expr 2))))
+           :sin (+ 1 (depth (nth expr 1)))
+           :cos (+ 1 (depth (nth expr 1)))
+           :square (+ 1 (depth (nth expr 1))))))
+
 (defn expr-zip
   "We define a zipper constructor for manipulating expression trees. Differs from the ordinary
   sequence zippers in that it views the `rest` of a vector as the children of the `first` of the
