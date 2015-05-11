@@ -24,6 +24,8 @@
                                                   (fullform (nth expr 2)) "]")
                                       :times (str "Times[" (fullform (nth expr 1)) ", "
                                                   (fullform (nth expr 2)) "]")
+                                      :div (str "Divide[" (fullform (nth expr 1)) ", "
+                                                  (fullform (nth expr 2)) "]")
                                       :sin (str "Sin[" (fullform (nth expr 1)) "]")
                                       :cos (str "Cos[" (fullform (nth expr 1)) "]")
                                       :square (str "Power[" (fullform (nth expr 1)) ", 2]")
