@@ -11,7 +11,7 @@
 (ns algebolic.expression.genetics
   "Core genetic operation on expressions. Includes functions for creating expressions."
   (:refer-clojure :exclude [rand rand-nth rand-int])
-  (:use [algebolic.utility.random])
+  (:use [darwin.utility.random])
   (:require [algebolic.expression.core :as expression]
             [algebolic.expression.tree :as tree]
             [clojure.walk :as walk]))
@@ -113,7 +113,7 @@
         subtree2 (tree/sub-tree expr2 target2)]
     [(tree/tree-replace expr1 target1 subtree2) (tree/tree-replace expr2 target2 subtree1)]))
 
-;; TODO: this could conceivably be a generic function in algebolic.evolution.reproduction
+;; TODO: this could conceivably be a generic function in darwin.evolution.reproduction
 (defn size-limited-crossover
   "Takes a crossover operation and makes a size-limited version of it. If a product is larger
   than the size limit then it is replaced with the corresponding parent. Note that this will

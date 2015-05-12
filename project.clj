@@ -8,8 +8,9 @@
 ; Not for distribution.
 ;
 
-(defproject algebolic "0.1.0-SNAPSHOT"
+(defproject algebolic "1.0.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
+                 [darwin "1.0.0-SNAPSHOT"]
                  [clj-kdtree "1.2.0" :exclusions [org.clojure/clojure]]
                  [gorilla-renderable "2.0.0"]
                  [criterium "0.4.3"]]

@@ -21,7 +21,7 @@
   in Java and optimised for performance, as expression evaluation is a significant part of the run-time
   of a regression run."
   (:refer-clojure :exclude [rand rand-nth rand-int])
-  (:use [algebolic.utility.random])
+  (:use [darwin.utility.random])
   (:require [clojure.walk :as walk]))
 
 ;; * Functions and terminals *

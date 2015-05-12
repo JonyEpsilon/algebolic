@@ -12,7 +12,7 @@
   "Contains operations that act on expressions as trees. These are used to implement genetic operations
   amongst other things."
   (:refer-clojure :exclude [rand rand-nth rand-int])
-  (:use [algebolic.utility.random])
+  (:use [darwin.utility.random])
   (:require [algebolic.expression.core :as expression]
             [clojure.zip :as zip]))
 
