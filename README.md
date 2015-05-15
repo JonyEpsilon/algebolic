@@ -6,6 +6,8 @@ to evolve mathematical expressions that optimise any score function. The express
 quickly evaluated, as can their derivatives which is useful in more advanced applications. We use it in our research
 lab, for example, to evolve laws of physics directly from data.
 
+Algebolic is built on the [darwin](https://github.com/JonyEpsilon/darwin) genetic algorithm framework.
+
 ## Usage
 
 Add it to your project.clj file:
